@@ -16,26 +16,34 @@ import lombok.extern.slf4j.Slf4j;
 public class HelloWorldServer {
 
     public static void main(String[] args) throws InterruptedException {
+        // bossGroup 处理连接和 IO 事件
         EventLoopGroup bossGroup = new NioEventLoopGroup();
+        // workerGroup 执行逻辑处理
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
 
             serverBootstrap.group(bossGroup, workerGroup)
+                           // 用于接收客户端的连接
                            .channel(NioServerSocketChannel.class)
+                           // 打印日志
                            .handler(new LoggingHandler(LogLevel.DEBUG))
-                           .childHandler(new ChannelInitializer<SocketChannel>() {
-                               @Override
-                               protected void initChannel(SocketChannel ch) throws Exception {
-                                   ChannelPipeline pipeline = ch.pipeline();
-                                   pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
-                                   pipeline.addLast(new HelloWorldServerHandler());
-                               }
-                           });
+                           .childHandler(
+                                   // 在接收到客户端连接后会回调 initChannel 进行初始化
+                                   new ChannelInitializer<SocketChannel>() {
+                                       @Override
+                                       protected void initChannel(SocketChannel ch) throws Exception {
+                                           ChannelPipeline pipeline = ch.pipeline();
+                                           pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
+                                           pipeline.addLast(new HelloWorldServerHandler());
+                                       }
+                                   });
 
-            ChannelFuture future = serverBootstrap.bind(8080).sync();
-            log.info("Server 启动完成");
+            // 监听端口
+            ChannelFuture future = serverBootstrap.bind(8080)
+                                                  .sync()
+                                                  .addListener(f -> log.info("Server 启动完成"));
             future.channel()
                   .closeFuture()
                   .sync();
