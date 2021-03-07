@@ -8,3 +8,15 @@ tls/src/main/resources/cert/ca.key
 tls/src/main/resources/cert/ca.srl
 tls/src/main/resources/cert/private.csr
 tls/src/main/resources/cert/private.key
+
+.idea/
+*/build
+*/buildOutputCleanup
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
