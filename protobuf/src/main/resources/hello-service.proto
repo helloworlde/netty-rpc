@@ -9,11 +9,6 @@ option java_package = "io.github.helloworlde.netty.protobuf.proto";
 option java_outer_classname = "HelloServiceProto";
 option java_multiple_files = true;
 
-
-service HelloService{
-  rpc sayHello(HelloRequest) returns(HelloResponse);
-}
-
 message HelloRequest {
   int64 id = 1;
   string message = 2;

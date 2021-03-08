@@ -38,12 +38,9 @@ public final class HelloServiceProto {
       "rotobuf\">\n\014HelloRequest\022\n\n\002id\030\001 \001(\003\022\017\n\007m" +
       "essage\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\003\"?\n\rHello" +
       "Response\022\n\n\002id\030\001 \001(\003\022\017\n\007message\030\002 \001(\t\022\021\n" +
-      "\ttimestamp\030\003 \001(\0032\203\001\n\014HelloService\022s\n\010say" +
-      "Hello\0222.io.github.helloworlde.netty.prot" +
-      "obuf.HelloRequest\0323.io.github.helloworld" +
-      "e.netty.protobuf.HelloResponseBA\n*io.git" +
-      "hub.helloworlde.netty.protobuf.protoB\021He" +
-      "lloServiceProtoP\001b\006proto3"
+      "\ttimestamp\030\003 \001(\003BA\n*io.github.helloworld" +
+      "e.netty.protobuf.protoB\021HelloServiceProt" +
+      "oP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
