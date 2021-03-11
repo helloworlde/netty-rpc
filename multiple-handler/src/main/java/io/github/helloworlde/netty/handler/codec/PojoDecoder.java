@@ -22,7 +22,7 @@ public class PojoDecoder extends ByteToMessageDecoder {
             log.info("不是自定义协议，交由后续处理");
             // 重置读指针，避免后续读取出现乱码
             in.resetReaderIndex();
-            // 移除当前 handler
+            // 移除当前连接中的该 handler
             ctx.channel().pipeline().remove(this);
             return;
         }
