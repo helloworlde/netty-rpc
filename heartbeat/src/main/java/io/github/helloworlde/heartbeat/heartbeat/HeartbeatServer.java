@@ -35,8 +35,7 @@ public class HeartbeatServer {
                                        @Override
                                        protected void initChannel(SocketChannel ch) throws Exception {
                                            ChannelPipeline pipeline = ch.pipeline();
-                                           pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
-                                                                     pipeline.addLast(new HeartbeatServerHandler());
+                                           pipeline.addLast(new HeartbeatServerHandler());
                                        }
                                    });
 
