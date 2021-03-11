@@ -3,6 +3,7 @@ package io.github.helloworlde.netty.helloworld;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -27,15 +28,21 @@ public class HelloWorldServer {
             serverBootstrap.group(bossGroup, workerGroup)
                            // 用于接收客户端的连接
                            .channel(NioServerSocketChannel.class)
-                           // 打印日志
+                           // 开启 TCP 心跳机制
+                           .childOption(ChannelOption.SO_KEEPALIVE, true)
+                           // 开启 Nagle 算法，true 表示关闭，会立即发送数据
+                           .childOption(ChannelOption.TCP_NODELAY, true)
+                           // 临时存放已完成三次握手的请求的队列的最大长度
+                           .childOption(ChannelOption.SO_BACKLOG, 1024)
+                           // handler 用于处理启动是的逻辑，如打印日志
                            .handler(new LoggingHandler(LogLevel.DEBUG))
+                           // childHandler 用于处理连接的读写处理逻辑
                            .childHandler(
                                    // 在接收到客户端连接后会回调 initChannel 进行初始化
                                    new ChannelInitializer<SocketChannel>() {
                                        @Override
                                        protected void initChannel(SocketChannel ch) throws Exception {
                                            ChannelPipeline pipeline = ch.pipeline();
-                                           pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
                                            pipeline.addLast(new HelloWorldServerHandler());
                                        }
                                    });
