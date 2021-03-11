@@ -15,11 +15,13 @@ public class PojoDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        // 记录当前的读指针位置
+        in.markReaderIndex();
         int protocol = in.readInt();
         if (protocol != CUSTOM_PROTOCOL) {
             log.info("不是自定义协议，交由后续处理");
-            // 重置读取的 index 索引，避免后续读取出现乱码
-            in.readerIndex(0);
+            // 重置读指针，避免后续读取出现乱码
+            in.resetReaderIndex();
             // 移除当前 handler
             ctx.channel().pipeline().remove(this);
             return;
