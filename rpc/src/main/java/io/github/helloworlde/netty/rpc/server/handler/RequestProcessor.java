@@ -26,8 +26,8 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
-        log.info("接收到新的请求");
         Long requestId = request.getRequestId();
+        log.info("接收到新的请求: {}", requestId);
 
         // header
         Header header = request.getHeader();

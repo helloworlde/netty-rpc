@@ -34,6 +34,8 @@ public class Client {
 
     private Channel channel;
 
+    private EventLoopGroup workGroup;
+
     public static Client client() {
         return new Client();
     }
@@ -50,7 +52,7 @@ public class Client {
     }
 
     public Client start() {
-        EventLoopGroup workGroup = new NioEventLoopGroup();
+        workGroup = new NioEventLoopGroup();
         try {
             clientHandler = new ClientHandler(service);
             Bootstrap bootstrap = new Bootstrap();
@@ -68,35 +70,32 @@ public class Client {
                      });
 
 
-            Channel channel = bootstrap.connect(host, port)
-                                       .addListener(f -> log.info("Client {} 启动成功", service.getName()))
-                                       .channel();
-
-            this.channel = channel;
-            channel.closeFuture()
-                   .sync();
+            this.channel = bootstrap.connect(host, port)
+                                    .sync()
+                                    .addListener(f -> {
+                                        log.info("Client '{}' 启动成功", service.getName());
+                                        Runtime.getRuntime()
+                                               .addShutdownHook(new Thread(this::shutdown));
+                                    })
+                                    .channel();
         } catch (Exception e) {
-            log.error("Client {} 错误: {}", service.getName(), e.getMessage());
-        } finally {
-            workGroup.shutdownGracefully();
+            e.printStackTrace();
         }
-
         return this;
     }
 
-    public void waiting() {
+    public void shutdown() {
         try {
-            channel.closeFuture()
-                   .sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.info("Shutting down...");
+            workGroup.shutdownGracefully();
+        } catch (Exception e) {
+            log.error("关闭错误: {}", e.getMessage(), e);
         }
     }
 
-    public ResponseFuture<Object> sendRequest(String methodName, Object message) {
-        log.info("开始发送请求");
+    public Object sendRequest(String methodName, Object message) throws Exception {
         long requestId = requestIdCounter.incrementAndGet();
-
+        log.info("开始发送请求: {}", requestId);
         Request request = Request.builder()
                                  .requestId(requestId)
                                  .body(message)
@@ -106,6 +105,7 @@ public class Client {
                                                .build())
                                  .build();
 
-        return this.clientHandler.sendRequest(request, channel);
+        ResponseFuture<Object> responseFuture = this.clientHandler.sendRequest(request, channel);
+        return responseFuture.get();
     }
 }

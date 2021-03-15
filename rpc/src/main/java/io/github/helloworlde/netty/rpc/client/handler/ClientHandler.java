@@ -2,7 +2,6 @@ package io.github.helloworlde.netty.rpc.client.handler;
 
 import io.github.helloworlde.netty.rpc.client.ResponseFuture;
 import io.github.helloworlde.netty.rpc.error.RpcException;
-import io.github.helloworlde.netty.rpc.model.Header;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
 import io.github.helloworlde.netty.rpc.model.Status;
@@ -14,7 +13,6 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -31,7 +29,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Response msg) throws Exception {
-        log.info("接收到响应");
+        log.info("接收到响应: {}", msg.getRequestId());
         Long requestId = msg.getRequestId();
         try {
             if (Status.SUCCESS.equals(msg.getStatus())) {
@@ -52,28 +50,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("Channel Active");
         this.context = ctx;
-
-        ctx.executor()
-           .scheduleAtFixedRate(() -> {
-
-               Request request = Request.builder()
-                                        .requestId(1L)
-                                        .header(Header.builder()
-                                                      .serviceName("io.github.helloworlde.netty.sample.service.HelloService")
-                                                      .methodName("sayHello")
-                                                      .build())
-                                        .body("RPC")
-                                        .build();
-               // ctx.writeAndFlush(request)
-               //    .addListener((ChannelFutureListener) future -> {
-               //        log.info("发送请求完成");
-               //        this.paddingRequests.putIfAbsent(1L, new ResponseFuture<>());
-               //    });
-               sendRequest(request, ctx.channel());
-
-           }, 2, 2, TimeUnit.SECONDS);
-
-
     }
 
     @Override
