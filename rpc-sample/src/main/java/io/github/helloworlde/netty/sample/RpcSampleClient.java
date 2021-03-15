@@ -1,49 +1,27 @@
 package io.github.helloworlde.netty.sample;
 
-import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
-import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
+import io.github.helloworlde.netty.rpc.client.Client;
+import io.github.helloworlde.netty.sample.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RpcSampleClient {
 
     public static void main(String[] args) {
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-
         try {
-            Bootstrap bootstrap = new Bootstrap();
+            Client client = Client.client()
+                                  .forAddress("127.0.0.1", 9091)
+                                  .service(HelloService.class)
+                                  .start();
 
-            bootstrap.group(workerGroup)
-                     .channel(NioSocketChannel.class)
-                     .handler(new LoggingHandler(LogLevel.DEBUG))
-                     .handler(new ChannelInitializer<NioSocketChannel>() {
-                         @Override
-                         protected void initChannel(NioSocketChannel ch) throws Exception {
-                             ChannelPipeline pipeline = ch.pipeline();
-                             pipeline.addLast(new MessageDecoder());
-                             pipeline.addLast(new MessageEncoder());
-                             pipeline.addLast(new RpcSampleClientHandler());
-                         }
-                     });
+            log.info("Client 启动完成");
 
-            Channel channel = bootstrap.connect("127.0.0.1", 9091)
-                                       .addListener(f -> log.info("启动完成"))
-                                       .channel();
-
-            channel.closeFuture().sync();
-        } catch (InterruptedException e) {
+            // ResponseFuture<Object> responseFuture = client.sendRequest("sayHello", "Hello");
+            // String response = (String) responseFuture.get();
+            // log.info("响应: {}", response);
+            client.waiting();
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            workerGroup.shutdownGracefully();
         }
 
     }
