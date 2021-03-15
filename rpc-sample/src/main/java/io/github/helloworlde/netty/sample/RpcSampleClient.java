@@ -16,10 +16,9 @@ public class RpcSampleClient {
 
             log.info("Client 启动完成");
 
-            // ResponseFuture<Object> responseFuture = client.sendRequest("sayHello", "Hello");
-            // String response = (String) responseFuture.get();
-            // log.info("响应: {}", response);
-            client.waiting();
+            String response = (String) client.sendRequest("sayHello", "Hello");
+
+            log.info("返回的响应结果: {}", response);
         } catch (Exception e) {
             e.printStackTrace();
         }
