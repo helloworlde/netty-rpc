@@ -3,7 +3,6 @@ package io.github.helloworlde.netty.rpc.client;
 import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
 import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
 import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
-import io.github.helloworlde.netty.rpc.model.Header;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -99,11 +98,10 @@ public class Client {
         log.info("开始发送请求: {}", requestId);
         Request request = Request.builder()
                                  .requestId(requestId)
-                                 .body(message)
-                                 .header(Header.builder()
-                                               .serviceName(this.service.getName())
-                                               .methodName(methodName)
-                                               .build())
+                                 .serviceName(this.service.getName())
+                                 .methodName(methodName)
+                                 .paramTypes(new Class<?>[]{String.class})
+                                 .params(new Object[]{message})
                                  .build();
 
         ResponseFuture<Object> responseFuture = this.clientHandler.sendRequest(request, channel);

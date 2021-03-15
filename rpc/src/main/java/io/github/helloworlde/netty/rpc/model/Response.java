@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.Map;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,9 +17,9 @@ public class Response {
 
     private Long requestId;
 
-    private Header header;
-
     private Object body;
 
     private Status status;
+
+    private Map<String, Object> extra;
 }

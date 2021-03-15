@@ -1,7 +1,6 @@
 package io.github.helloworlde.netty.rpc.server.handler;
 
 import io.github.helloworlde.netty.rpc.error.RpcException;
-import io.github.helloworlde.netty.rpc.model.Header;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
 import io.github.helloworlde.netty.rpc.model.ServiceDetail;
@@ -30,10 +29,9 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
         log.info("接收到新的请求: {}", requestId);
 
         // header
-        Header header = request.getHeader();
-        String serviceName = Optional.ofNullable(header.getServiceName())
+        String serviceName = Optional.ofNullable(request.getServiceName())
                                      .orElseThrow(() -> new RpcException("ServiceName not present"));
-        String methodName = Optional.ofNullable(header.getMethodName())
+        String methodName = Optional.ofNullable(request.getMethodName())
                                     .orElseThrow(() -> new RpcException("MethodName not present"));
 
         // Service
@@ -46,8 +44,8 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
             throw new RpcException(requestId, "Method Not Found");
         }
 
-        Object body = request.getBody();
-        Object responseBody = method.invoke(serviceDetail.getInstance(), body);
+        Object[] params = request.getParams();
+        Object responseBody = method.invoke(serviceDetail.getInstance(), params);
         log.info("方法返回结果: {}", responseBody);
 
         Response response = Response.builder()

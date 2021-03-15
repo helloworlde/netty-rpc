@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,7 +14,13 @@ import lombok.NoArgsConstructor;
 public class Request {
     private Long requestId;
 
-    private Header header;
+    private String serviceName;
 
-    private Object body;
+    private String methodName;
+
+    private Class<?>[] paramTypes;
+
+    private Object[] params;
+
+    private Map<String, Object> extra;
 }
