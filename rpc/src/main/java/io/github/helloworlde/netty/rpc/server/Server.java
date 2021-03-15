@@ -2,8 +2,8 @@ package io.github.helloworlde.netty.rpc.server;
 
 import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
 import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
-import io.github.helloworlde.netty.rpc.handler.RequestProcessor;
 import io.github.helloworlde.netty.rpc.model.ServiceDetail;
+import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class Server {
-    private Map<String, ServiceDetail<?>> serviceDetailMap = new HashMap<>();
+    private final Map<String, ServiceDetail<?>> serviceDetailMap = new HashMap<>();
 
     private int port = 9090;
 
@@ -55,7 +55,7 @@ public class Server {
         return this;
     }
 
-    public Channel start() {
+    public void start() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         Channel channel = null;
@@ -93,6 +93,5 @@ public class Server {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-        return channel;
     }
 }

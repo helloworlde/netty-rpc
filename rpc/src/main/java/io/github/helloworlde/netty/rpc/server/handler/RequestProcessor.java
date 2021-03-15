@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.rpc.handler;
+package io.github.helloworlde.netty.rpc.server.handler;
 
 import io.github.helloworlde.netty.rpc.error.RpcException;
 import io.github.helloworlde.netty.rpc.model.Header;
