@@ -10,6 +10,7 @@ public class RpcSampleServer {
 
     public static void main(String[] args) throws InterruptedException {
         Server.server()
+              .port(9091)
               .addService(HelloService.class, new HelloServiceImpl())
               .start();
     }

@@ -24,18 +24,18 @@ public class RpcSampleClient {
 
             bootstrap.group(workerGroup)
                      .channel(NioSocketChannel.class)
+                     .handler(new LoggingHandler(LogLevel.DEBUG))
                      .handler(new ChannelInitializer<NioSocketChannel>() {
                          @Override
                          protected void initChannel(NioSocketChannel ch) throws Exception {
                              ChannelPipeline pipeline = ch.pipeline();
-                             pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
-                             pipeline.addLast(new MessageEncoder());
                              pipeline.addLast(new MessageDecoder());
+                             pipeline.addLast(new MessageEncoder());
                              pipeline.addLast(new RpcSampleClientHandler());
                          }
                      });
 
-            Channel channel = bootstrap.connect("127.0.0.1", 9090)
+            Channel channel = bootstrap.connect("127.0.0.1", 9091)
                                        .addListener(f -> log.info("启动完成"))
                                        .channel();
 
