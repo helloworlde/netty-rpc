@@ -14,6 +14,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -56,8 +57,8 @@ public class Server {
     }
 
     public void start() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("boss-group"));
+        EventLoopGroup workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("worker-group"));
         Channel channel = null;
 
         try {

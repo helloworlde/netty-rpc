@@ -14,6 +14,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -52,7 +53,7 @@ public class Client {
     }
 
     public Client start() {
-        workGroup = new NioEventLoopGroup();
+        workGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("client-io-group"));
         try {
             clientHandler = new ClientHandler(service);
             Bootstrap bootstrap = new Bootstrap();
