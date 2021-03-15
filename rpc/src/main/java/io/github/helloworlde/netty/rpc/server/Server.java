@@ -5,6 +5,7 @@ import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
 import io.github.helloworlde.netty.rpc.handler.RequestProcessor;
 import io.github.helloworlde.netty.rpc.model.ServiceDetail;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -23,12 +24,21 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class ServerBuilder {
+public class Server {
     private Map<String, ServiceDetail<?>> serviceDetailMap = new HashMap<>();
 
     private int port = 9090;
 
-    private ServerBuilder addService(Class<?> service, Object instance) {
+    public static Server server() {
+        return new Server();
+    }
+
+    public Server port(int port) {
+        this.port = port;
+        return this;
+    }
+
+    public Server addService(Class<?> service, Object instance) {
         if (!serviceDetailMap.containsKey(service.getName())) {
             Map<String, Method> methods = Arrays.stream(service.getMethods())
                                                 .collect(Collectors.toMap(Method::getName, m -> m));
@@ -46,10 +56,10 @@ public class ServerBuilder {
         return this;
     }
 
-    public void start() {
+    public Channel start() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-
+        Channel channel = null;
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -76,15 +86,15 @@ public class ServerBuilder {
                                                              }
                                                          });
 
-            channelFuture.channel()
-                         .closeFuture()
-                         .sync();
+            channel = channelFuture.channel();
+            channel.closeFuture().sync();
+
         } catch (InterruptedException e) {
             log.error("Server 初始化失败: {}", e.getMessage(), e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-
+        return channel;
     }
 }
