@@ -4,22 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
+import lombok.ToString;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Response {
 
     private Long requestId;
 
+    private Header header;
+
     private Object body;
 
-    private String message;
-
     private Status status;
-
-    private Map<String, Object> header;
 }
