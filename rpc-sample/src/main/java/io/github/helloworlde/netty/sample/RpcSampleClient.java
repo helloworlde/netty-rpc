@@ -9,14 +9,13 @@ public class RpcSampleClient {
 
     public static void main(String[] args) {
         try {
-            Client client = Client.client()
-                                  .forAddress("127.0.0.1", 9091)
-                                  .service(HelloService.class)
-                                  .start();
+            HelloService helloService = new Client<HelloService>().service(HelloService.class)
+                                                                  .forAddress("127.0.0.1", 9091)
+                                                                  .start();
 
             log.info("Client 启动完成");
 
-            String response = (String) client.sendRequest("sayHello", "Hello");
+            String response = helloService.sayHello("啊哈啊啊啊啊");
 
             log.info("返回的响应结果: {}", response);
         } catch (Exception e) {

@@ -17,14 +17,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
-public class ClientHandler extends SimpleChannelInboundHandler<Response> {
-    private Class<?> service;
+public class Transport extends SimpleChannelInboundHandler<Response> {
 
     private ConcurrentHashMap<Long, ResponseFuture<Object>> paddingRequests = new ConcurrentHashMap<>();
-    private ChannelHandlerContext context;
 
-    public <T> ClientHandler(Class<T> service) {
-        this.service = service;
+    private Channel channel;
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        this.channel = ctx.channel();
     }
 
     @Override
@@ -49,7 +50,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("Channel Active");
-        this.context = ctx;
     }
 
     @Override
@@ -65,11 +65,23 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
         // ctx.close();
     }
 
-    public ResponseFuture<Object> sendRequest(Request request, Channel channel) {
+    public ResponseFuture<Object> sendRequest(Request request) {
+        while (!this.channel.isActive()) {
+            log.info("Channel is not active, waiting...");
+        }
+
         ResponseFuture<Object> responseFuture = new ResponseFuture<>();
         this.paddingRequests.putIfAbsent(request.getRequestId(), responseFuture);
         channel.writeAndFlush(request)
-               .addListener(f -> log.info("请求: {} 发送完成", request.getRequestId()));
+               .addListener(f -> {
+                   if (f.isSuccess()) {
+                       log.info("请求: {} 发送完成", request.getRequestId());
+                   } else {
+                       log.error("请求: {} 发送失败: {} ", request.getRequestId(), f.cause().getMessage());
+                       this.paddingRequests.get(request.getRequestId())
+                                           .setFailure(f.cause());
+                   }
+               });
         return responseFuture;
     }
 }
