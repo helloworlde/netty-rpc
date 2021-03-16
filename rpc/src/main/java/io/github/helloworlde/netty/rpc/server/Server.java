@@ -57,6 +57,11 @@ public class Server {
     }
 
     public void start() {
+        Thread thread = new Thread(this::startUp);
+        thread.start();
+    }
+
+    private void startUp() {
         EventLoopGroup bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("boss-group"));
         EventLoopGroup workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("worker-group"));
         Channel channel = null;
@@ -88,7 +93,7 @@ public class Server {
             channel = channelFuture.channel();
             channel.closeFuture().sync();
 
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             log.error("Server 初始化失败: {}", e.getMessage(), e);
         } finally {
             bossGroup.shutdownGracefully();
