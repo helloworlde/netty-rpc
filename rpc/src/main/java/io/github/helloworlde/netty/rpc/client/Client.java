@@ -1,84 +1,98 @@
 package io.github.helloworlde.netty.rpc.client;
 
-import io.github.helloworlde.netty.rpc.client.handler.Transport;
-import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
-import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.concurrent.DefaultThreadFactory;
+import io.github.helloworlde.netty.rpc.client.transport.Transport;
+import io.github.helloworlde.netty.rpc.error.RpcException;
+import io.github.helloworlde.netty.rpc.model.Request;
+import io.github.helloworlde.netty.rpc.model.Response;
+import io.github.helloworlde.netty.rpc.model.Status;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 @Slf4j
-public class Client<T> {
+public class Client {
 
     private String host;
 
     private Integer port;
 
-    private Class<T> service;
-
     private Transport transport;
 
-    private EventLoopGroup workGroup;
+    private final AtomicLong requestSeq = new AtomicLong();
 
-    public Client<T> forAddress(String host, int port) {
+    private ConcurrentHashMap<Long, ResponseFuture<Object>> paddingRequests = new ConcurrentHashMap<>();
+
+    public Client forAddress(String host, int port) {
         this.host = host;
         this.port = port;
         return this;
     }
 
-    public Client<T> service(Class<T> service) {
-        this.service = service;
+    public Client start() throws Exception {
+        this.transport = new Transport(this);
+        transport.doOpen();
+        transport.doConnect(host, port);
         return this;
-    }
-
-    public T start() {
-        workGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("client-io-group"));
-        try {
-            transport = new Transport();
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(workGroup)
-                     .channel(NioSocketChannel.class)
-                     .handler(new LoggingHandler(LogLevel.DEBUG))
-                     .handler(new ChannelInitializer<SocketChannel>() {
-                         @Override
-                         protected void initChannel(SocketChannel ch) throws Exception {
-                             ch.pipeline()
-                               .addLast(new MessageEncoder())
-                               .addLast(new MessageDecoder())
-                               .addLast(transport);
-                         }
-                     });
-
-
-            bootstrap.connect(host, port)
-                     .sync()
-                     .addListener(f -> {
-                         log.info("Client '{}' 启动成功", service.getName());
-                         Runtime.getRuntime()
-                                .addShutdownHook(new Thread(this::shutdown));
-                     })
-                     .channel();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return new ServiceProxy<T>(transport).newProxy(service);
     }
 
     public void shutdown() {
         try {
             log.info("Shutting down...");
-            workGroup.shutdownGracefully();
+            transport.shutdown();
         } catch (Exception e) {
             log.error("关闭错误: {}", e.getMessage(), e);
         }
+    }
+
+    private Request createRequest(Class<?> proxyClass, String methodName, Object[] params) throws Exception {
+        return Request.builder()
+                      .requestId(requestSeq.getAndIncrement())
+                      .serviceName(proxyClass.getName())
+                      .methodName(methodName)
+                      .params(params)
+                      .build();
+    }
+
+    public Object sendRequest(Class<?> serviceClass, String methodName, Object[] args) throws Exception {
+        while (!this.transport.isActive()) {
+            log.info("Channel is not active, waiting...");
+        }
+
+        Request request = createRequest(serviceClass, methodName, args);
+        ResponseFuture<Object> responseFuture = new ResponseFuture<>();
+        this.paddingRequests.putIfAbsent(request.getRequestId(), responseFuture);
+
+        ResponseFuture<Object> future = transport.write(request, responseFuture);
+        return waitResponse(future);
+    }
+
+    private Object waitResponse(ResponseFuture<Object> future) throws Exception {
+        return future.get();
+    }
+
+    public void receiveResponse(Response msg) {
+        if (Status.SUCCESS.equals(msg.getStatus())) {
+            paddingRequests.get(msg.getRequestId())
+                           .setSuccess(msg.getBody());
+        } else {
+            paddingRequests.get(msg.getRequestId())
+                           .setFailure(new RpcException((String) msg.getBody()));
+        }
+    }
+
+    public void receiveError(Long requestId, Throwable cause) {
+        paddingRequests.get(requestId)
+                       .setFailure(new RpcException(cause.getMessage()));
+    }
+
+    public void sendComplete(Long requestId) {
+        log.info("Send request: {} success", requestId);
+    }
+
+    public void completeRequest(Long requestId) {
+        log.info("Request: {} Completed", requestId);
+        this.paddingRequests.remove(requestId);
     }
 }
