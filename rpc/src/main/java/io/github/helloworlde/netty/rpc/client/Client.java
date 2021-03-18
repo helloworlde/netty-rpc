@@ -56,7 +56,7 @@ public class Client {
 
     public Object sendRequest(Class<?> serviceClass, String methodName, Object[] args) throws Exception {
         while (!this.transport.isActive()) {
-            log.info("Channel is not active, waiting...");
+            log.debug("Channel is not active, waiting...");
         }
 
         Request request = createRequest(serviceClass, methodName, args);
@@ -86,11 +86,11 @@ public class Client {
     }
 
     public void sendComplete(Long requestId) {
-        log.info("Send request: {} success", requestId);
+        log.trace("Send request: {} success", requestId);
     }
 
     public void completeRequest(Long requestId) {
-        log.info("Request: {} Completed", requestId);
+        log.trace("Request: {} Completed", requestId);
         this.paddingRequests.remove(requestId);
     }
 }

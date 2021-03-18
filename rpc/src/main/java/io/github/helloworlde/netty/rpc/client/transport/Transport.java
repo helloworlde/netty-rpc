@@ -52,7 +52,7 @@ public class Transport {
         this.channel = bootstrap.connect(host, port)
                                 .sync()
                                 .addListener(f -> {
-                                    log.info("Client 启动成功");
+                                    log.debug("Client 启动成功");
                                 })
                                 .channel();
     }
@@ -63,18 +63,18 @@ public class Transport {
 
     public void shutdown() {
         this.channel.flush();
-        this.channel.disconnect().addListener(f -> log.info("Disconnect completed"));
-        workerGroup.shutdownGracefully().addListener(f -> log.info("WorkerGroup shutdown complete"));
+        this.channel.disconnect().addListener(f -> log.debug("Disconnect completed"));
+        workerGroup.shutdownGracefully().addListener(f -> log.debug("WorkerGroup shutdown complete"));
     }
 
     public void write(Request request) {
         channel.writeAndFlush(request)
                .addListener(f -> {
                    if (f.isSuccess()) {
-                       log.info("请求: {} 发送完成", request.getRequestId());
+                       log.trace("请求: {} 发送完成", request.getRequestId());
                        client.sendComplete(request.getRequestId());
                    } else {
-                       log.error("请求: {} 发送失败: {} ", request.getRequestId(), f.cause().getMessage());
+                       log.debug("请求: {} 发送失败: {} ", request.getRequestId(), f.cause().getMessage());
                        client.receiveError(request.getRequestId(), f.cause());
                    }
                });

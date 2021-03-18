@@ -21,10 +21,10 @@ public class MessageDecoder extends ByteToMessageDecoder {
      */
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        log.info("Decode");
+        log.trace("Decode message");
         int protocol = in.readInt();
         if (Constants.PROTOCOL_MAGIC != protocol) {
-            log.info("协议不正确");
+            log.warn("协议无法识别: {}", protocol);
             ctx.close();
         }
 

@@ -40,15 +40,9 @@ public class RpcSampleClient {
         for (int i = 0; i < 1000; i++) {
             CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
                 log.info("发送请求: {}", counter.getAndIncrement());
-                String response = null;
-                try {
-                    response = helloService.sayHello("" + counter.get());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return response;
+                return helloService.sayHello("" + counter.get());
             });
-
+            futureList.add(future);
         }
 
         for (CompletableFuture<String> future : futureList) {

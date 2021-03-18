@@ -29,7 +29,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Response msg) throws Exception {
-        log.info("接收到响应: {}", msg.getRequestId());
+        log.debug("接收到响应: {}", msg.getRequestId());
         Long requestId = msg.getRequestId();
         try {
             client.receiveResponse(msg);
@@ -42,12 +42,12 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("Channel Active");
+        log.debug("Channel Active");
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.info("Channel Read Complete");
+        log.debug("Channel Read Complete");
         ctx.flush();
     }
 

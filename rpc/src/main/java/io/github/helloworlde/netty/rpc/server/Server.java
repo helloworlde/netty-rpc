@@ -91,9 +91,9 @@ public class Server {
             ChannelFuture channelFuture = serverBootstrap.bind(port)
                                                          .addListener(f -> {
                                                              if (f.isSuccess()) {
-                                                                 log.info("Server 启动完成");
+                                                                 log.debug("Server 启动完成");
                                                              } else {
-                                                                 log.error("Server 启动失败");
+                                                                 log.debug("Server 启动失败");
                                                              }
                                                          });
 

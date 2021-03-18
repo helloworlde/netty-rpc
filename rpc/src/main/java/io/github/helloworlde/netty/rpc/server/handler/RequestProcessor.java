@@ -31,14 +31,14 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
         executor.execute(() -> {
             Long requestId = request.getRequestId();
-            log.info("接收到新的请求: {}", requestId);
+            log.trace("接收到新的请求: {}", requestId);
 
             Response response = Response.builder()
                                         .requestId(requestId)
                                         .build();
             try {
                 Object responseBody = handlerRequest(request);
-                log.info("方法返回结果: {}", responseBody);
+                log.trace("方法返回结果: {}", responseBody);
 
                 response.setBody(responseBody);
             } catch (RpcException e) {
@@ -49,7 +49,7 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
                 response.setError("INTERNAL ERROR");
             } finally {
                 ctx.writeAndFlush(response)
-                   .addListener(f -> log.info("发送响应完成"));
+                   .addListener(f -> log.trace("发送响应完成"));
             }
         });
     }
@@ -77,7 +77,7 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.info("Read Complete");
+        log.trace("Read Complete");
         // ctx.flush();
     }
 

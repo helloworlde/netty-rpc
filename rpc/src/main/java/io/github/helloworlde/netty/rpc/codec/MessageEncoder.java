@@ -19,7 +19,7 @@ public class MessageEncoder extends MessageToByteEncoder<Object> {
      */
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
-        log.info("Encode");
+        log.trace("Encode message");
         out.writeInt(Constants.PROTOCOL_MAGIC);
 
         // 消息类型
