@@ -1,5 +1,6 @@
 package io.github.helloworlde.netty.rpc.model;
 
+import io.github.helloworlde.netty.rpc.error.RpcException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,8 @@ public class Response {
 
     private Object body;
 
-    private Status status;
-
     private Map<String, Object> extra;
+
+    private RpcException exception;
+
 }

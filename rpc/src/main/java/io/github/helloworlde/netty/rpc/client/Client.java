@@ -4,7 +4,6 @@ import io.github.helloworlde.netty.rpc.client.transport.Transport;
 import io.github.helloworlde.netty.rpc.error.RpcException;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
-import io.github.helloworlde.netty.rpc.model.Status;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,12 +72,12 @@ public class Client {
     }
 
     public void receiveResponse(Response msg) {
-        if (Status.SUCCESS.equals(msg.getStatus())) {
+        if (msg.getException() == null) {
             paddingRequests.get(msg.getRequestId())
                            .setSuccess(msg.getBody());
         } else {
             paddingRequests.get(msg.getRequestId())
-                           .setFailure(new RpcException((String) msg.getBody()));
+                           .setFailure(msg.getException());
         }
     }
 

@@ -13,23 +13,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RpcException extends Exception {
 
-
-    private Long requestId;
     private String message;
-    private Throwable throwable;
+
+    private Throwable cause;
 
     public RpcException(String message) {
+        super(message);
         this.message = message;
     }
 
-    public RpcException(Long requestId, String message) {
-        this.requestId = requestId;
-        this.message = message;
-    }
-
-    public RpcException(Long requestId, Throwable cause) {
+    public RpcException(Throwable cause) {
         super(cause);
-        this.requestId = requestId;
-        this.message = cause.getMessage();
+        this.cause = cause;
     }
+
 }

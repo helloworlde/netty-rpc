@@ -22,6 +22,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,8 +66,10 @@ public class Server {
     }
 
     private void startUp() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("boss-group"));
-        EventLoopGroup workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("worker-group"));
+        EventLoopGroup bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("accept-group"));
+        EventLoopGroup workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("io-event-group"));
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 100, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
+                new DefaultThreadFactory("business-group"));
         Channel channel = null;
 
         try {
@@ -79,7 +84,7 @@ public class Server {
                                      .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 12, 4))
                                      .addLast(new MessageDecoder())
                                      .addLast(new MessageEncoder())
-                                     .addLast(new RequestProcessor(serviceDetailMap));
+                                     .addLast(new RequestProcessor(serviceDetailMap, executor));
                                }
                            });
 

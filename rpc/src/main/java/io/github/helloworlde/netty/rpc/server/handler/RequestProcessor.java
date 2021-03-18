@@ -4,31 +4,58 @@ import io.github.helloworlde.netty.rpc.error.RpcException;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
 import io.github.helloworlde.netty.rpc.model.ServiceDetail;
-import io.github.helloworlde.netty.rpc.model.Status;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 @Slf4j
 public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
 
     private final Map<String, ServiceDetail<?>> serviceDetailMap;
 
-    public RequestProcessor(Map<String, ServiceDetail<?>> serviceDetailMap) {
+    private final Executor executor;
+
+    public RequestProcessor(Map<String, ServiceDetail<?>> serviceDetailMap, Executor executor) {
         this.serviceDetailMap = serviceDetailMap;
+        this.executor = executor;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
-        Long requestId = request.getRequestId();
-        log.info("接收到新的请求: {}", requestId);
+        executor.execute(() -> {
+            Long requestId = request.getRequestId();
+            log.info("接收到新的请求: {}", requestId);
 
-        // header
+            Response response = Response.builder()
+                                        .requestId(requestId)
+                                        .build();
+            try {
+                Object responseBody = handlerRequest(request);
+                log.info("方法返回结果: {}", responseBody);
+
+                response.setBody(responseBody);
+            } catch (RpcException e) {
+                response.setException(e);
+            } catch (Exception e) {
+                RpcException exception = RpcException.builder()
+                                                     .message(e.getMessage())
+                                                     .build();
+                response.setException(exception);
+            } finally {
+                ctx.writeAndFlush(response)
+                   .addListener(f -> log.info("发送响应完成"));
+            }
+        });
+    }
+
+    private Object handlerRequest(Request request) throws RpcException, IllegalAccessException, InvocationTargetException {
         String serviceName = Optional.ofNullable(request.getServiceName())
                                      .orElseThrow(() -> new RpcException("ServiceName not present"));
         String methodName = Optional.ofNullable(request.getMethodName())
@@ -37,51 +64,26 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
         // Service
         ServiceDetail<?> serviceDetail = serviceDetailMap.get(serviceName);
         if (Objects.isNull(serviceDetail)) {
-            throw new RpcException(requestId, "Service Not Found");
+            throw new RpcException("Service Not Found");
         }
         Method method = serviceDetail.getMethods().get(methodName);
         if (Objects.isNull(method)) {
-            throw new RpcException(requestId, "Method Not Found");
+            throw new RpcException("Method Not Found");
         }
 
         Object[] params = request.getParams();
-        Object responseBody = method.invoke(serviceDetail.getInstance(), params);
-        log.info("方法返回结果: {}", responseBody);
 
-        Response response = Response.builder()
-                                    .requestId(requestId)
-                                    .body(responseBody)
-                                    .status(Status.SUCCESS)
-                                    .build();
-        ctx.write(response)
-           .addListener(f -> log.info("发送响应完成"));
+        return method.invoke(serviceDetail.getInstance(), params);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         log.info("Read Complete");
-        ctx.flush();
+        // ctx.flush();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("异常:{}", cause.getMessage());
-
-        RpcException rpcException;
-        if (cause instanceof RpcException) {
-            rpcException = (RpcException) cause;
-        } else {
-            rpcException = RpcException.builder()
-                                       .message(cause.getMessage())
-                                       .throwable(cause)
-                                       .build();
-        }
-        Response response = Response.builder()
-                                    .requestId(rpcException.getRequestId())
-                                    .body(rpcException.getMessage())
-                                    .status(Status.EXCEPTION)
-                                    .build();
-
-        ctx.writeAndFlush(response);
     }
 }
