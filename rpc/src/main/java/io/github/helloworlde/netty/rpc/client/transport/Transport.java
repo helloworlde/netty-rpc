@@ -13,6 +13,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -40,6 +41,7 @@ public class Transport {
                      @Override
                      protected void initChannel(SocketChannel ch) throws Exception {
                          ch.pipeline()
+                           .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 12, 4))
                            .addLast(new MessageEncoder())
                            .addLast(new MessageDecoder())
                            .addLast(handler);
