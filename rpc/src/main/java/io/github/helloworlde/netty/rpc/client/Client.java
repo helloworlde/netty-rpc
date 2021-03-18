@@ -76,7 +76,7 @@ public class Client {
             paddingRequests.get(msg.getRequestId())
                            .setSuccess(msg.getBody());
         } else {
-            receiveError(msg.getRequestId(), new RpcException("Response error: " + msg.getError()));
+            receiveError(msg.getRequestId(), new RpcException("Response failed: " + msg.getError()));
         }
     }
 
