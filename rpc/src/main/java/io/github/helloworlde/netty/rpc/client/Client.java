@@ -64,8 +64,8 @@ public class Client {
         ResponseFuture<Object> responseFuture = new ResponseFuture<>();
         this.paddingRequests.putIfAbsent(request.getRequestId(), responseFuture);
 
-        ResponseFuture<Object> future = transport.write(request, responseFuture);
-        return waitResponse(future);
+        transport.write(request);
+        return waitResponse(responseFuture);
     }
 
     private Object waitResponse(ResponseFuture<Object> future) throws Exception {

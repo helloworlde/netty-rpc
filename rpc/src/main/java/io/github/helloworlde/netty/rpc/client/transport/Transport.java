@@ -1,7 +1,6 @@
 package io.github.helloworlde.netty.rpc.client.transport;
 
 import io.github.helloworlde.netty.rpc.client.Client;
-import io.github.helloworlde.netty.rpc.client.ResponseFuture;
 import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
 import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
 import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
@@ -68,7 +67,7 @@ public class Transport {
         workerGroup.shutdownGracefully().addListener(f -> log.info("WorkerGroup shutdown complete"));
     }
 
-    public ResponseFuture<Object> write(Request request, ResponseFuture<Object> responseFuture) {
+    public void write(Request request) {
         channel.writeAndFlush(request)
                .addListener(f -> {
                    if (f.isSuccess()) {
@@ -79,6 +78,5 @@ public class Transport {
                        client.receiveError(request.getRequestId(), f.cause());
                    }
                });
-        return responseFuture;
     }
 }
