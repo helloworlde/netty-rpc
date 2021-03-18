@@ -72,18 +72,17 @@ public class Client {
     }
 
     public void receiveResponse(Response msg) {
-        if (msg.getException() == null) {
+        if (msg.getError() == null) {
             paddingRequests.get(msg.getRequestId())
                            .setSuccess(msg.getBody());
         } else {
-            paddingRequests.get(msg.getRequestId())
-                           .setFailure(msg.getException());
+            receiveError(msg.getRequestId(), new RpcException("Response error: " + msg.getError()));
         }
     }
 
     public void receiveError(Long requestId, Throwable cause) {
         paddingRequests.get(requestId)
-                       .setFailure(new RpcException(cause.getMessage()));
+                       .setFailure(cause);
     }
 
     public void sendComplete(Long requestId) {

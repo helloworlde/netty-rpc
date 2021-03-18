@@ -41,13 +41,12 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
                 log.info("方法返回结果: {}", responseBody);
 
                 response.setBody(responseBody);
-            } catch (RpcException e) {
-                response.setException(e);
             } catch (Exception e) {
-                RpcException exception = RpcException.builder()
-                                                     .message(e.getMessage())
-                                                     .build();
-                response.setException(exception);
+                String errorMessage = Optional.ofNullable(e.getCause())
+                                              .map(Throwable::getMessage)
+                                              .orElse(e.getMessage());
+
+                response.setError(errorMessage);
             } finally {
                 ctx.writeAndFlush(response)
                    .addListener(f -> log.info("发送响应完成"));
