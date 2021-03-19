@@ -1,8 +1,5 @@
 package io.github.helloworlde.netty.rpc.codec;
 
-import io.github.helloworlde.netty.rpc.model.MessageType;
-import io.github.helloworlde.netty.rpc.model.Request;
-import io.github.helloworlde.netty.rpc.model.Response;
 import io.github.helloworlde.netty.rpc.serialize.Serialize;
 import io.github.helloworlde.netty.rpc.serialize.SerializeEnum;
 import io.github.helloworlde.netty.rpc.util.Constants;
@@ -14,10 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
-public class MessageDecoder extends ByteToMessageDecoder {
+public class MessageDecoder<T> extends ByteToMessageDecoder {
+
+    private Class<T> decodeClass;
+
+    public MessageDecoder(Class<T> decodeClass) {
+        this.decodeClass = decodeClass;
+    }
 
     /**
-     * Protocol: MagicNumber + MessageType + Serialize + Length + Body
+     * Protocol: MagicNumber + Serialize + Length + Body
      */
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -28,9 +31,6 @@ public class MessageDecoder extends ByteToMessageDecoder {
             ctx.close();
         }
 
-        // 消息类型
-        int messageType = in.readInt();
-
         // 序列化类型
         int serializeType = in.readInt();
         Serialize serialize = SerializeEnum.getById(serializeType);
@@ -40,13 +40,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
         byte[] bodyBytes = new byte[length];
         in.readBytes(bodyBytes);
 
-        MessageType messageTypeValue = MessageType.fromType(messageType);
-        if (MessageType.REQUEST.equals(messageTypeValue)) {
-            Request request = serialize.deserialize(bodyBytes, Request.class);
-            out.add(request);
-        } else if (MessageType.RESPONSE.equals(messageTypeValue)) {
-            Response response = serialize.deserialize(bodyBytes, Response.class);
-            out.add(response);
-        }
+        T result = serialize.deserialize(bodyBytes, decodeClass);
+        out.add(result);
     }
 }
