@@ -1,5 +1,6 @@
 package io.github.helloworlde.netty.rpc.client;
 
+import io.github.helloworlde.netty.rpc.client.handler.RequestInvoker;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
@@ -9,12 +10,13 @@ import java.lang.reflect.Proxy;
 @Slf4j
 public class ServiceProxy<T> implements InvocationHandler {
 
-    private Client client;
+    private final RequestInvoker invoker;
 
     public ServiceProxy(Client client) {
-        this.client = client;
+        this.invoker = new RequestInvoker(client.getTransport());
     }
 
+    @SuppressWarnings("all")
     public T newProxy(Class<T> serviceClass) {
         return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{serviceClass}, this);
     }
@@ -24,7 +26,7 @@ public class ServiceProxy<T> implements InvocationHandler {
         Class<?> proxyClass = method.getDeclaringClass();
         String methodName = method.getName();
         Class<?> returnType = method.getReturnType();
-        Object result = client.sendRequest(proxyClass, methodName, args);
+        Object result = invoker.sendRequest(proxyClass, methodName, args);
         return returnType.cast(result);
     }
 
