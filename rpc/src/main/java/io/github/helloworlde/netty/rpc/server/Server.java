@@ -1,18 +1,13 @@
 package io.github.helloworlde.netty.rpc.server;
 
-import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
-import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
 import io.github.helloworlde.netty.rpc.model.ServiceDetail;
-import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
+import io.github.helloworlde.netty.rpc.server.handler.ServerChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -29,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class Server {
+
     private final Map<String, ServiceDetail<?>> serviceDetailMap = new HashMap<>();
 
     private int port = 9090;
@@ -77,16 +73,7 @@ public class Server {
             serverBootstrap.group(bossGroup, workerGroup)
                            .channel(NioServerSocketChannel.class)
                            .handler(new LoggingHandler(LogLevel.INFO))
-                           .childHandler(new ChannelInitializer<SocketChannel>() {
-                               @Override
-                               protected void initChannel(SocketChannel ch) throws Exception {
-                                   ch.pipeline()
-                                     .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 12, 4))
-                                     .addLast(new MessageDecoder())
-                                     .addLast(new MessageEncoder())
-                                     .addLast(new RequestProcessor(serviceDetailMap, executor));
-                               }
-                           });
+                           .childHandler(new ServerChannelInitializer(serviceDetailMap, executor));
 
             ChannelFuture channelFuture = serverBootstrap.bind(port)
                                                          .addListener(f -> {

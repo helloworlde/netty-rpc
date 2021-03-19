@@ -1,0 +1,34 @@
+package io.github.helloworlde.netty.rpc.server.handler;
+
+import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
+import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
+import io.github.helloworlde.netty.rpc.model.ServiceDetail;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+
+import java.util.Map;
+import java.util.concurrent.Executor;
+
+public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> {
+
+    private Map<String, ServiceDetail<?>> serviceDetailMap;
+
+    private Executor executor;
+
+    public ServerChannelInitializer(Map<String, ServiceDetail<?>> serviceDetailMap, Executor executor) {
+        this.serviceDetailMap = serviceDetailMap;
+        this.executor = executor;
+    }
+
+    @Override
+    protected void initChannel(SocketChannel ch) throws Exception {
+        // lengthFiledOffset 请求内容的偏移量；MagicNumber + MessageType + Serialize = 12
+        // lengthFieldLength 请求内容的长度标识偏移量 Length = 4
+        ch.pipeline()
+          .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 12, 4))
+          .addLast(new MessageDecoder())
+          .addLast(new MessageEncoder())
+          .addLast(new RequestProcessor(serviceDetailMap, executor));
+    }
+}
