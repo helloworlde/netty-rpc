@@ -39,7 +39,7 @@ public class Transport {
         bootstrap.group(workerGroup)
                  .channel(NioSocketChannel.class)
                  .handler(new LoggingHandler(LogLevel.DEBUG))
-                 .handler(new ClientChannelInitial(handler));
+                 .handler(new ClientChannelInitializer(handler));
     }
 
     public void doConnect() throws Exception {

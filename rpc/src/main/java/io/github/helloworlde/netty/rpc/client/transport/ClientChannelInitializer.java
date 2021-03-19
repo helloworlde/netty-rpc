@@ -7,11 +7,11 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
-public class ClientChannelInitial extends ChannelInitializer<SocketChannel> {
+public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private ClientHandler handler;
 
-    public ClientChannelInitial(ClientHandler handler) {
+    public ClientChannelInitializer(ClientHandler handler) {
         this.handler = handler;
     }
 
