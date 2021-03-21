@@ -17,8 +17,10 @@ public class RpcSampleClient {
     public static void main(String[] args) {
         Client client = null;
         try {
-            client = new Client().forAddress("127.0.0.1", 9091)
-                                 .start();
+            client = new Client()
+                    .forTarget("RPC_SERVER")
+                    // .forAddress("127.0.0.1", 9091)
+                    .start();
 
             HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
 
@@ -26,18 +28,33 @@ public class RpcSampleClient {
             String response = helloService.sayHello("啊哈啊啊啊啊 " + counter.getAndIncrement());
             log.info("返回的响应结果: {}", response);
 
-            multiple(helloService);
+            asyncMultiple(helloService);
+            syncMultiple(helloService);
 
         } catch (Exception e) {
             log.info("异常: {}", e.getMessage(), e);
         }
     }
 
-    private static void multiple(HelloService helloService) throws InterruptedException, java.util.concurrent.ExecutionException {
+    private static void syncMultiple(HelloService helloService) {
+        String response;
+        for (int i = 0; i < 10000; i++) {
+            try {
+                response = helloService.sayHello("啊哈啊啊啊啊 " + counter.getAndIncrement());
+                log.info(response);
+                Thread.sleep(10);
+            } catch (Exception e) {
+                // e.printStackTrace();
+                log.info("调用失败: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    private static void asyncMultiple(HelloService helloService) throws InterruptedException, java.util.concurrent.ExecutionException {
 
         List<CompletableFuture<String>> futureList = new ArrayList<>();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
                 log.info("发送请求: {}", counter.getAndIncrement());
                 return helloService.sayHello("" + counter.get());
