@@ -31,13 +31,11 @@ public class RequestInvoker {
     public Object sendRequest(Class<?> serviceClass, String methodName, Object[] args) throws Exception {
         Transport transport = loadBalancer.choose();
 
-        if (!transport.isInit()) {
-            transport.init();
-            transport.doConnect();
-        }
-
         while (!transport.isActive()) {
-            log.debug("Channel is not active, waiting...");
+            log.info("Channel {} is not active, waiting...", transport.getAddress());
+            Thread.sleep(5);
+            // 重新选择节点
+            transport = loadBalancer.choose();
         }
 
         Request request = createRequest(serviceClass, methodName, args);

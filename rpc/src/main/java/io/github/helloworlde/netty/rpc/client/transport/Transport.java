@@ -14,12 +14,13 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class Transport {
 
-    private static EventLoopGroup workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("transport-io"));
+    private EventLoopGroup workerGroup;
 
     private Channel channel;
 
@@ -39,7 +40,10 @@ public class Transport {
         if (isInit()) {
             return;
         }
-        handler = new ClientHandler();
+        log.info("开始初始化: {}", this.address);
+
+        this.handler = new ClientHandler();
+        this.workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("transport-io"));
         this.bootstrap = new Bootstrap();
         bootstrap.group(workerGroup)
                  .channel(NioSocketChannel.class)
@@ -53,9 +57,14 @@ public class Transport {
             init();
         }
 
+        if (Objects.nonNull(channel) && channel.isActive()) {
+            return;
+        }
+        log.info("开始连接: {}", this.address);
+
         this.channel = bootstrap.connect(address)
                                 .sync()
-                                .addListener(f -> log.debug("Client 启动成功"))
+                                .addListener(f -> log.info("连接: {} 成功", this.address))
                                 .channel();
     }
 
@@ -72,12 +81,14 @@ public class Transport {
     }
 
     public void shutdown() {
+        log.info("开始关闭连接: {}", this.address);
         this.channel.flush();
         this.channel.disconnect().addListener(f -> log.debug("Disconnect completed"));
         workerGroup.shutdownGracefully().addListener(f -> log.debug("WorkerGroup shutdown complete"));
     }
 
     public void write(Request request, ResponseFuture<Object> responseFuture) {
+        log.info("请求: {}", this.address);
         handler.write(request, responseFuture);
     }
 }

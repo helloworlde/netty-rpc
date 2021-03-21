@@ -5,6 +5,7 @@ import io.github.helloworlde.netty.rpc.error.RpcException;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.Data;
@@ -16,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Slf4j
+@ChannelHandler.Sharable
 public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
     private Channel channel;
