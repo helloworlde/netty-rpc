@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ConsulNameResolver extends NameResolver {
+public class FakeNameResolver extends NameResolver {
 
     private int value = 0;
 
-    public ConsulNameResolver(String authority, LoadBalancer loadBalancer) {
+    public FakeNameResolver(String authority, LoadBalancer loadBalancer) {
         super(authority, loadBalancer);
     }
 

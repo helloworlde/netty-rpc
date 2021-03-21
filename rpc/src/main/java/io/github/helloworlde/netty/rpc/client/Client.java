@@ -2,7 +2,7 @@ package io.github.helloworlde.netty.rpc.client;
 
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.lb.RandomLoadBalancer;
-import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
+import io.github.helloworlde.netty.rpc.client.nameresovler.FakeNameResolver;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -52,7 +52,7 @@ public class Client {
         log.info("Client starting...");
         this.executor = new ScheduledThreadPoolExecutor(5, new DefaultThreadFactory("name-resolver"));
         if (Objects.nonNull(this.authority)) {
-            this.nameResolver = new ConsulNameResolver(this.authority, this.loadBalancer);
+            this.nameResolver = new FakeNameResolver(this.authority, this.loadBalancer);
             this.nameResolver.resolve();
             this.executor.scheduleAtFixedRate(() -> nameResolver.resolve(), 5, 20, TimeUnit.SECONDS);
         }
