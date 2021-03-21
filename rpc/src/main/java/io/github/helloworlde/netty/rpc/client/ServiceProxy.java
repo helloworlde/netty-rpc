@@ -13,7 +13,7 @@ public class ServiceProxy<T> implements InvocationHandler {
     private final RequestInvoker invoker;
 
     public ServiceProxy(Client client) {
-        this.invoker = new RequestInvoker(client.getTransport());
+        this.invoker = new RequestInvoker(client.getLoadBalancer());
     }
 
     @SuppressWarnings("all")

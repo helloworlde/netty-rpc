@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 public class MessageDecoder<T> extends ByteToMessageDecoder {
 
-    private Class<T> decodeClass;
+    private final Class<T> decodeClass;
 
     public MessageDecoder(Class<T> decodeClass) {
         this.decodeClass = decodeClass;

@@ -14,7 +14,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class Transport {
@@ -29,22 +29,28 @@ public class Transport {
 
     private SocketAddress address;
 
+    private final AtomicBoolean init = new AtomicBoolean(false);
+
     public Transport(SocketAddress address) {
         this.address = address;
     }
 
-    public void doOpen() throws Exception {
+    public void init() throws Exception {
+        if (isInit()) {
+            return;
+        }
         handler = new ClientHandler();
         this.bootstrap = new Bootstrap();
         bootstrap.group(workerGroup)
                  .channel(NioSocketChannel.class)
                  .handler(new LoggingHandler(LogLevel.DEBUG))
                  .handler(new ClientChannelInitializer(handler));
+        init.compareAndSet(false, true);
     }
 
     public void doConnect() throws Exception {
-        if (Objects.nonNull(channel) && channel.isActive()) {
-            return;
+        if (!isInit()) {
+            init();
         }
 
         this.channel = bootstrap.connect(address)
@@ -55,6 +61,14 @@ public class Transport {
 
     public boolean isActive() {
         return channel.isActive();
+    }
+
+    public boolean isInit() {
+        return this.init.get();
+    }
+
+    public SocketAddress getAddress() {
+        return address;
     }
 
     public void shutdown() {

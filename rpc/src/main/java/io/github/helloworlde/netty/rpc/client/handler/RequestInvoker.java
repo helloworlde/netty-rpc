@@ -1,6 +1,7 @@
 package io.github.helloworlde.netty.rpc.client.handler;
 
 import io.github.helloworlde.netty.rpc.client.ResponseFuture;
+import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,11 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RequestInvoker {
 
     private final AtomicLong requestSeq = new AtomicLong();
-    private Transport transport;
 
-    public RequestInvoker(Transport transport) {
-        this.transport = transport;
+    private final LoadBalancer loadBalancer;
+
+    public RequestInvoker(LoadBalancer loadBalancer) {
+        this.loadBalancer = loadBalancer;
     }
 
     private Request createRequest(Class<?> proxyClass, String methodName, Object[] params) throws Exception {
@@ -27,7 +29,14 @@ public class RequestInvoker {
     }
 
     public Object sendRequest(Class<?> serviceClass, String methodName, Object[] args) throws Exception {
-        while (!this.transport.isActive()) {
+        Transport transport = loadBalancer.choose();
+
+        if (!transport.isInit()) {
+            transport.init();
+            transport.doConnect();
+        }
+
+        while (!transport.isActive()) {
             log.debug("Channel is not active, waiting...");
         }
 
