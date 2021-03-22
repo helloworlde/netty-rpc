@@ -2,9 +2,7 @@ package io.github.helloworlde.netty.rpc.client;
 
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.lb.RandomLoadBalancer;
-import io.github.helloworlde.netty.rpc.client.nameresovler.FakeNameResolver;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
-import io.github.helloworlde.netty.rpc.client.transport.Transport;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,11 +18,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Client {
 
-    private Transport transport;
-
     private SocketAddress address;
 
-    private LoadBalancer loadBalancer = new RandomLoadBalancer();
+    private LoadBalancer loadBalancer;
 
     private NameResolver nameResolver;
 
@@ -43,6 +39,11 @@ public class Client {
         return this;
     }
 
+    public Client nameResolver(NameResolver nameResolver) {
+        this.nameResolver = nameResolver;
+        return this;
+    }
+
     public Client loadBalancer(LoadBalancer loadBalancer) {
         this.loadBalancer = loadBalancer;
         return this;
@@ -51,8 +52,12 @@ public class Client {
     public Client start() throws Exception {
         log.info("Client starting...");
         this.executor = new ScheduledThreadPoolExecutor(5, new DefaultThreadFactory("name-resolver"));
-        if (Objects.nonNull(this.authority)) {
-            this.nameResolver = new FakeNameResolver(this.authority, this.loadBalancer);
+        if (Objects.isNull(this.loadBalancer)) {
+            this.loadBalancer = new RandomLoadBalancer();
+        }
+        if (Objects.nonNull(this.nameResolver)) {
+            this.nameResolver.setAuthority(this.authority);
+            this.nameResolver.setLoadBalancer(this.loadBalancer);
             this.nameResolver.resolve();
             this.executor.scheduleAtFixedRate(() -> nameResolver.resolve(), 5, 20, TimeUnit.SECONDS);
         }
@@ -63,7 +68,6 @@ public class Client {
         try {
             log.info("Shutting down...");
             this.executor.shutdown();
-            this.transport.shutdown();
         } catch (Exception e) {
             log.error("关闭错误: {}", e.getMessage(), e);
         }
