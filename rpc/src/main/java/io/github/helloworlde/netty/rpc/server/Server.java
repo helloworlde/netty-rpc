@@ -7,6 +7,7 @@ import io.github.helloworlde.netty.rpc.server.handler.ServerChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -109,7 +110,8 @@ public class Server {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workerGroup)
                            .channel(NioServerSocketChannel.class)
-                           .handler(new LoggingHandler(LogLevel.INFO))
+                           .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                           .handler(new LoggingHandler(LogLevel.DEBUG))
                            .childHandler(new ServerChannelInitializer(serviceDetailMap, executor));
 
             ChannelFuture channelFuture = serverBootstrap.bind(port)
