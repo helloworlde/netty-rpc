@@ -1,6 +1,8 @@
 package io.github.helloworlde.netty.rpc.server;
 
 import io.github.helloworlde.netty.rpc.model.ServiceDetail;
+import io.github.helloworlde.netty.rpc.registry.Registry;
+import io.github.helloworlde.netty.rpc.registry.ServiceInfo;
 import io.github.helloworlde.netty.rpc.server.handler.ServerChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -17,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -29,12 +33,44 @@ public class Server {
 
     private int port = 9090;
 
+    private String address = "127.0.0.1";
+
+    private String name;
+
+    private String serviceId;
+
+    private Map<String, String> metadata = new HashMap<>();
+
+    private Registry registry;
+
     public static Server server() {
         return new Server();
     }
 
     public Server port(int port) {
         this.port = port;
+        return this;
+    }
+
+    public Server name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public Server address(String address) {
+        this.address = address;
+        return this;
+    }
+
+
+    public Server addMetadata(String name, String value) {
+        this.metadata.put(name, value);
+        return this;
+    }
+
+
+    public Server registry(Registry registry) {
+        this.registry = registry;
         return this;
     }
 
@@ -57,6 +93,7 @@ public class Server {
     }
 
     public void start() {
+        this.serviceId = UUID.randomUUID().toString();
         Thread thread = new Thread(this::startUp);
         thread.start();
     }
@@ -79,6 +116,9 @@ public class Server {
                                                          .addListener(f -> {
                                                              if (f.isSuccess()) {
                                                                  log.debug("Server 启动完成");
+                                                                 if (Objects.nonNull(this.registry)) {
+                                                                     doRegistry();
+                                                                 }
                                                              } else {
                                                                  log.debug("Server 启动失败");
                                                              }
@@ -93,5 +133,26 @@ public class Server {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    private void doRegistry() {
+        try {
+            ServiceInfo serviceInfo = ServiceInfo.builder()
+                                                 .id(this.serviceId)
+                                                 .name(this.name)
+                                                 .port(this.port)
+                                                 .address(this.address)
+                                                 .metadata(metadata)
+                                                 .build();
+            this.registry.register(serviceInfo);
+        } catch (Exception e) {
+            log.error("注册失败: {}", e.getMessage(), e);
+        }
+    }
+
+    public void shutdown() {
+        this.registry.deRegister(ServiceInfo.builder()
+                                            .id(this.serviceId)
+                                            .build());
     }
 }
