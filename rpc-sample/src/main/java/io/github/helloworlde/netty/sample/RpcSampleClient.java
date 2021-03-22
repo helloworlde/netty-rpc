@@ -2,6 +2,7 @@ package io.github.helloworlde.netty.sample;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ServiceProxy;
+import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
 import io.github.helloworlde.netty.sample.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,20 +20,27 @@ public class RpcSampleClient {
         try {
             client = new Client()
                     .forTarget("RPC_SERVER")
+                    .nameResolver(new ConsulNameResolver("127.0.0.1", 8500))
                     // .forAddress("127.0.0.1", 9091)
                     .start();
 
+            log.info("Client 启动完成");
+
+
             HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
 
-            log.info("Client 启动完成");
             String response = helloService.sayHello("啊哈啊啊啊啊 " + counter.getAndIncrement());
             log.info("返回的响应结果: {}", response);
 
             asyncMultiple(helloService);
             syncMultiple(helloService);
 
+            Runtime.getRuntime().addShutdownHook(new Thread(client::shutdown));
+
         } catch (Exception e) {
             log.info("异常: {}", e.getMessage(), e);
+        } finally {
+            client.shutdown();
         }
     }
 
