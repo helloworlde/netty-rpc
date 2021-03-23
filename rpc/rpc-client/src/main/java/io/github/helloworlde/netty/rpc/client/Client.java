@@ -37,6 +37,9 @@ public class Client {
 
     private ScheduledExecutorService executor;
 
+    private EventLoopGroup workerGroup;
+
+
     public Client forAddress(String host, int port) throws Exception {
         this.address = new InetSocketAddress(host, port);
         loadBalancer.updateAddress(Collections.singletonList(address));
@@ -64,7 +67,7 @@ public class Client {
 
         Bootstrap bootstrap = new Bootstrap();
         ClientHandler handler = new ClientHandler();
-        EventLoopGroup workerGroup = new NioEventLoopGroup(100, new DefaultThreadFactory("transport-io"));
+        workerGroup = new NioEventLoopGroup(100, new DefaultThreadFactory("transport-io"));
 
         bootstrap.group(workerGroup)
                  .channel(NioSocketChannel.class)
@@ -90,6 +93,7 @@ public class Client {
         try {
             log.info("Shutting down...");
             this.executor.shutdown();
+            this.workerGroup.shutdownGracefully();
         } catch (Exception e) {
             log.error("关闭错误: {}", e.getMessage(), e);
         }
