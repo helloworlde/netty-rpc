@@ -1,9 +1,9 @@
-package io.github.helloworlde.netty.sample;
+package io.github.helloworlde.netty.example;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ServiceProxy;
 import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
-import io.github.helloworlde.netty.sample.service.HelloService;
+import io.github.helloworlde.netty.example.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-public class RpcSampleClient {
+public class RpcExampleClient {
     static AtomicInteger counter = new AtomicInteger();
 
     public static void main(String[] args) {

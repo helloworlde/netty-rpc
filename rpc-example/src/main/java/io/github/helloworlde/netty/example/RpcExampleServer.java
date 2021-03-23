@@ -1,13 +1,13 @@
-package io.github.helloworlde.netty.sample;
+package io.github.helloworlde.netty.example;
 
 import io.github.helloworlde.netty.rpc.registry.ConsulRegistry;
 import io.github.helloworlde.netty.rpc.server.Server;
-import io.github.helloworlde.netty.sample.service.HelloService;
-import io.github.helloworlde.netty.sample.service.impl.HelloServiceImpl;
+import io.github.helloworlde.netty.example.service.HelloService;
+import io.github.helloworlde.netty.example.service.impl.HelloServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RpcSampleServer {
+public class RpcExampleServer {
 
     public static void main(String[] args) throws InterruptedException {
         Server server = Server.server()

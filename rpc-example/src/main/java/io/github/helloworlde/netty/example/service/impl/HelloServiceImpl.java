@@ -1,6 +1,6 @@
-package io.github.helloworlde.netty.sample.service.impl;
+package io.github.helloworlde.netty.example.service.impl;
 
-import io.github.helloworlde.netty.sample.service.HelloService;
+import io.github.helloworlde.netty.example.service.HelloService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
