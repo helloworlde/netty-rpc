@@ -17,11 +17,11 @@ public abstract class LoadBalancer {
 
     protected transient List<Transport> transports = new CopyOnWriteArrayList<>();
 
-    public LoadBalancer(Bootstrap bootstrap) {
+    public abstract Transport choose();
+
+    public void setBootstrap(Bootstrap bootstrap) {
         this.bootstrap = bootstrap;
     }
-
-    public abstract Transport choose();
 
     public synchronized void updateAddress(List<SocketAddress> resolvedAddresses) {
         List<Transport> newTransport = new ArrayList<>(this.transports);

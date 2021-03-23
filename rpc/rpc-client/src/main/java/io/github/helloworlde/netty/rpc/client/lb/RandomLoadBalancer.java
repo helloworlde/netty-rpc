@@ -1,17 +1,12 @@
 package io.github.helloworlde.netty.rpc.client.lb;
 
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
-import io.netty.bootstrap.Bootstrap;
 
 import java.util.Random;
 
 public class RandomLoadBalancer extends LoadBalancer {
 
     private final Random random = new Random();
-
-    public RandomLoadBalancer(Bootstrap bootstrap) {
-        super(bootstrap);
-    }
 
     @Override
     public Transport choose() {

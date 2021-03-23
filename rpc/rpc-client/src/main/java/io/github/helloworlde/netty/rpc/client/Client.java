@@ -78,7 +78,8 @@ public class Client {
                  .handler(new ClientChannelInitializer(handler));
 
         if (Objects.isNull(this.loadBalancer)) {
-            this.loadBalancer = new RandomLoadBalancer(bootstrap);
+            this.loadBalancer = new RandomLoadBalancer();
+            this.loadBalancer.setBootstrap(bootstrap);
         }
         if (Objects.nonNull(this.nameResolver)) {
             this.nameResolver.setAuthority(this.authority);
