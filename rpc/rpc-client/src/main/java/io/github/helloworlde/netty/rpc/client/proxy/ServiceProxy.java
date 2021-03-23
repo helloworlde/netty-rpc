@@ -1,6 +1,7 @@
-package io.github.helloworlde.netty.rpc.client;
+package io.github.helloworlde.netty.rpc.client.proxy;
 
-import io.github.helloworlde.netty.rpc.client.handler.RequestInvoker;
+import io.github.helloworlde.netty.rpc.client.Client;
+import io.github.helloworlde.netty.rpc.client.request.RequestInvoker;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;

@@ -1,7 +1,7 @@
 package io.github.helloworlde.netty.rpc.client.transport;
 
-import io.github.helloworlde.netty.rpc.client.ResponseFuture;
 import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
+import io.github.helloworlde.netty.rpc.client.request.ResponseFuture;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;

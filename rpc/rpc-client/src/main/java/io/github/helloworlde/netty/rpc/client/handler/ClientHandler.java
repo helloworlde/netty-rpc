@@ -1,6 +1,6 @@
 package io.github.helloworlde.netty.rpc.client.handler;
 
-import io.github.helloworlde.netty.rpc.client.ResponseFuture;
+import io.github.helloworlde.netty.rpc.client.request.ResponseFuture;
 import io.github.helloworlde.netty.rpc.error.RpcException;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;

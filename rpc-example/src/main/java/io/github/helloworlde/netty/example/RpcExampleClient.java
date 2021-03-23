@@ -1,9 +1,9 @@
 package io.github.helloworlde.netty.example;
 
-import io.github.helloworlde.netty.rpc.client.Client;
-import io.github.helloworlde.netty.rpc.client.ServiceProxy;
-import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
 import io.github.helloworlde.netty.example.service.HelloService;
+import io.github.helloworlde.netty.rpc.client.Client;
+import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
+import io.github.helloworlde.netty.rpc.client.proxy.ServiceProxy;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
