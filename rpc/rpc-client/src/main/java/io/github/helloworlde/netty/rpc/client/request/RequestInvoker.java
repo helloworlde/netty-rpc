@@ -31,7 +31,7 @@ public class RequestInvoker {
         Transport transport = loadBalancer.choose();
 
         while (!transport.isActive()) {
-            log.info("Channel {} is not active, waiting...", transport.getAddress());
+            log.info("Channel {} is not active, waiting...", transport.toString());
             Thread.sleep(5);
             // 重新选择节点
             transport = loadBalancer.choose();

@@ -117,12 +117,12 @@ public class Server {
             ChannelFuture channelFuture = serverBootstrap.bind(port)
                                                          .addListener(f -> {
                                                              if (f.isSuccess()) {
-                                                                 log.debug("Server 启动完成");
+                                                                 log.info("Server 启动完成");
                                                                  if (Objects.nonNull(this.registry)) {
                                                                      doRegistry();
                                                                  }
                                                              } else {
-                                                                 log.debug("Server 启动失败");
+                                                                 log.info("Server 启动失败");
                                                              }
                                                          });
 

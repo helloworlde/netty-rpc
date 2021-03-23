@@ -83,6 +83,6 @@ public class RequestProcessor extends SimpleChannelInboundHandler<Request> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("异常:{}", cause.getMessage());
+        log.error("异常:{}", cause.getMessage(), cause);
     }
 }

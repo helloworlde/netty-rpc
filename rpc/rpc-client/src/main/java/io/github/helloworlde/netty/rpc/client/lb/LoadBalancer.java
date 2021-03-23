@@ -1,6 +1,7 @@
 package io.github.helloworlde.netty.rpc.client.lb;
 
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
+import io.netty.bootstrap.Bootstrap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
@@ -12,7 +13,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class LoadBalancer {
 
+    protected Bootstrap bootstrap;
+
     protected transient List<Transport> transports = new CopyOnWriteArrayList<>();
+
+    public LoadBalancer(Bootstrap bootstrap) {
+        this.bootstrap = bootstrap;
+    }
 
     public abstract Transport choose();
 
@@ -37,10 +44,9 @@ public abstract class LoadBalancer {
 
         // 为新的地址创建连接
         addresses.stream()
-                 .map(Transport::new)
+                 .map(address -> new Transport(address, this.bootstrap))
                  .forEach(transport -> {
                      try {
-                         transport.init();
                          transport.doConnect();
                          newTransport.add(transport);
                      } catch (Exception e) {

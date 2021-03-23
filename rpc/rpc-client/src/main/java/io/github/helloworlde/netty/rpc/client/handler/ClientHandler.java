@@ -31,7 +31,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Response msg) throws Exception {
-        log.debug("接收到响应: {}", msg.getRequestId());
+        log.info("接收到响应: {}", msg.getRequestId());
         Long requestId = msg.getRequestId();
         try {
             receiveResponse(msg);
@@ -44,12 +44,18 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("Channel Active");
+        log.info("Channel Active");
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.error("channelInactive");
+        ctx.close();
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.debug("Channel Read Complete");
+        log.info("Channel Read Complete");
         ctx.flush();
     }
 
@@ -59,6 +65,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     }
 
     public void write(Request request, ResponseFuture<Object> responseFuture) {
+        log.info("请求 {} Channel: {}", request.getRequestId(), channel);
         this.paddingRequests.putIfAbsent(request.getRequestId(), responseFuture);
         channel.writeAndFlush(request)
                .addListener(f -> {
@@ -66,7 +73,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
                        log.trace("请求: {} 发送完成", request.getRequestId());
                        sendComplete(request.getRequestId());
                    } else {
-                       log.debug("请求: {} 发送失败: {} ", request.getRequestId(), f.cause().getMessage());
+                       log.info("请求: {} 发送失败: {} ", request.getRequestId(), f.cause().getMessage());
                        receiveError(request.getRequestId(), f.cause());
                    }
                });
