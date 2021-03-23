@@ -7,13 +7,13 @@ subprojects {
     version = "0.0.1"
 
     repositories {
+        mavenCentral()
         maven {
             setUrl("https://maven.aliyun.com/repository/apache-snapshots")
         }
         maven {
             setUrl("https://maven.aliyun.com/repository/public")
         }
-        mavenCentral()
         jcenter()
     }
 
