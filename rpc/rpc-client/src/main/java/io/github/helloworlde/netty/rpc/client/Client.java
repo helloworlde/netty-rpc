@@ -79,8 +79,8 @@ public class Client {
 
         if (Objects.isNull(this.loadBalancer)) {
             this.loadBalancer = new RandomLoadBalancer();
-            this.loadBalancer.setBootstrap(bootstrap);
         }
+        this.loadBalancer.setBootstrap(bootstrap);
         if (Objects.nonNull(this.nameResolver)) {
             this.nameResolver.setAuthority(this.authority);
             this.nameResolver.setLoadBalancer(this.loadBalancer);
