@@ -62,6 +62,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("异常: {}", cause.getMessage(), cause);
+        ctx.close();
     }
 
     public void write(Request request, ResponseFuture<Object> responseFuture) {

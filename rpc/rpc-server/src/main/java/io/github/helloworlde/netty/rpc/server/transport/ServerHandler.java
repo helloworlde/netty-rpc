@@ -32,6 +32,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("Channel Inactive: {}", ctx.channel());
+        ctx.close();
     }
 
     @Override
@@ -51,5 +52,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("异常:{}", cause.getMessage(), cause);
+        ctx.close();
     }
 }
