@@ -1,26 +1,25 @@
-package io.github.helloworlde.netty.rpc.server.handler;
+package io.github.helloworlde.netty.rpc.server.transport;
 
 import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
 import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
 import io.github.helloworlde.netty.rpc.model.Request;
-import io.github.helloworlde.netty.rpc.model.ServiceDetail;
+import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 
-import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private Map<String, ServiceDetail<?>> serviceDetailMap;
+    private final RequestProcessor processor;
 
-    private Executor executor;
+    private final Executor executor;
 
-    public ServerChannelInitializer(Map<String, ServiceDetail<?>> serviceDetailMap, Executor executor) {
-        this.serviceDetailMap = serviceDetailMap;
+    public ServerChannelInitializer(RequestProcessor processor, Executor executor) {
+        this.processor = processor;
         this.executor = executor;
     }
 
@@ -34,6 +33,6 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
           .addLast(new WriteTimeoutHandler(10))
           .addLast(new MessageDecoder<>(Request.class))
           .addLast(new MessageEncoder())
-          .addLast(new RequestProcessor(serviceDetailMap, executor));
+          .addLast(new ServerHandler(this.processor, this.executor));
     }
 }

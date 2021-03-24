@@ -3,17 +3,8 @@ package io.github.helloworlde.netty.rpc.server;
 import io.github.helloworlde.netty.rpc.model.ServiceDetail;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.registry.ServiceInfo;
-import io.github.helloworlde.netty.rpc.server.handler.ServerChannelInitializer;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.concurrent.DefaultThreadFactory;
+import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
+import io.github.helloworlde.netty.rpc.server.transport.Transport;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -22,9 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,6 +31,8 @@ public class Server {
     private Map<String, String> metadata = new HashMap<>();
 
     private Registry registry;
+
+    private Transport transport;
 
     public static Server server() {
         return new Server();
@@ -100,42 +90,25 @@ public class Server {
     }
 
     private void startUp() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("accept-group"));
-        EventLoopGroup workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("io-event-group"));
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 100, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
-                new DefaultThreadFactory("business-group"));
-        Channel channel = null;
-
         try {
-            ServerBootstrap serverBootstrap = new ServerBootstrap();
-            serverBootstrap.group(bossGroup, workerGroup)
-                           .channel(NioServerSocketChannel.class)
-                           .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                           .handler(new LoggingHandler(LogLevel.DEBUG))
-                           .childHandler(new ServerChannelInitializer(serviceDetailMap, executor));
+            transport = new Transport();
 
-            ChannelFuture channelFuture = serverBootstrap.bind(port)
-                                                         .addListener(f -> {
-                                                             if (f.isSuccess()) {
-                                                                 log.info("Server 启动完成");
-                                                                 if (Objects.nonNull(this.registry)) {
-                                                                     doRegistry();
-                                                                 }
-                                                             } else {
-                                                                 log.info("Server 启动失败");
-                                                             }
-                                                         });
+            RequestProcessor requestProcessor = new RequestProcessor(serviceDetailMap);
 
-            channel = channelFuture.channel();
-            channel.closeFuture().sync();
+            transport.doInit(requestProcessor);
+            this.port = transport.doBind(this.port);
 
+            if (Objects.nonNull(this.registry)) {
+                doRegistry();
+            }
+            transport.waiting();
         } catch (Exception e) {
             log.error("Server 初始化失败: {}", e.getMessage(), e);
         } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
+            transport.shutdown();
         }
     }
+
 
     private void doRegistry() {
         try {
@@ -146,6 +119,7 @@ public class Server {
                                                  .address(this.address)
                                                  .metadata(metadata)
                                                  .build();
+            log.info("Server 注册: {}", serviceInfo);
             this.registry.register(serviceInfo);
         } catch (Exception e) {
             log.error("注册失败: {}", e.getMessage(), e);
@@ -153,8 +127,10 @@ public class Server {
     }
 
     public void shutdown() {
+        log.info("Server 注销");
         this.registry.deRegister(ServiceInfo.builder()
                                             .id(this.serviceId)
                                             .build());
+        this.transport.shutdown();
     }
 }
