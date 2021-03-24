@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -84,7 +83,6 @@ public class Server {
     }
 
     public void start() {
-        this.serviceId = UUID.randomUUID().toString();
         Thread thread = new Thread(this::startUp);
         thread.start();
     }
@@ -112,6 +110,7 @@ public class Server {
 
     private void doRegistry() {
         try {
+            this.serviceId = String.format("%s-%s-%d", this.name, this.address, this.port);
             ServiceInfo serviceInfo = ServiceInfo.builder()
                                                  .id(this.serviceId)
                                                  .name(this.name)
