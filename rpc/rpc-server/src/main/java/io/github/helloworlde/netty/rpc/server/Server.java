@@ -103,7 +103,7 @@ public class Server {
         } catch (Exception e) {
             log.error("Server 初始化失败: {}", e.getMessage(), e);
         } finally {
-            transport.shutdown();
+           this.shutdown();
         }
     }
 
@@ -127,7 +127,7 @@ public class Server {
 
     public void shutdown() {
         log.info("Server 注销");
-        this.registry.deRegister(ServiceInfo.builder()
+        this.registry.deregister(ServiceInfo.builder()
                                             .id(this.serviceId)
                                             .build());
         this.transport.shutdown();

@@ -44,7 +44,7 @@ public class ConsulRegistry extends Registry {
     }
 
     @Override
-    public boolean deRegister(ServiceInfo serviceInfo) {
+    public boolean deregister(ServiceInfo serviceInfo) {
         try {
             agentClient.deregister(serviceInfo.getId());
         } catch (Exception e) {

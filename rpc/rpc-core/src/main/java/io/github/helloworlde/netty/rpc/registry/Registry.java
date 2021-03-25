@@ -4,5 +4,5 @@ public abstract class Registry {
 
     public abstract boolean register(ServiceInfo serviceInfo);
 
-    public abstract boolean deRegister(ServiceInfo serviceInfo);
+    public abstract boolean deregister(ServiceInfo serviceInfo);
 }

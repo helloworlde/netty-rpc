@@ -39,9 +39,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
         log.info("接收到新的请求: {}", request.getRequestId());
 
-        executor.execute(() -> {
-            this.processor.process(channel, request);
-        });
+        executor.execute(() -> this.processor.process(channel, request));
     }
 
     @Override
