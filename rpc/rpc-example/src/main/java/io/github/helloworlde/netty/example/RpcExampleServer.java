@@ -1,9 +1,9 @@
 package io.github.helloworlde.netty.example;
 
-import io.github.helloworlde.netty.rpc.registry.ConsulRegistry;
-import io.github.helloworlde.netty.rpc.server.Server;
 import io.github.helloworlde.netty.example.service.HelloService;
 import io.github.helloworlde.netty.example.service.impl.HelloServiceImpl;
+import io.github.helloworlde.netty.rpc.registry.ConsulRegistry;
+import io.github.helloworlde.netty.rpc.server.Server;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,7 +20,6 @@ public class RpcExampleServer {
                               .addService(HelloService.class, new HelloServiceImpl());
 
         server.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
+        server.awaitTermination();
     }
 }

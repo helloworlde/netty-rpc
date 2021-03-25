@@ -3,22 +3,20 @@ package io.github.helloworlde.netty.rpc.server.handler;
 import io.github.helloworlde.netty.rpc.error.RpcException;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
-import io.github.helloworlde.netty.rpc.model.ServiceDetail;
+import io.github.helloworlde.netty.rpc.model.ServiceDefinition;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 public class RequestProcessor {
 
-    private final Map<String, ServiceDetail<?>> serviceDetailMap;
+    private final ServiceRegistry serviceRegistry;
 
-    public RequestProcessor(Map<String, ServiceDetail<?>> serviceDetailMap) {
-        this.serviceDetailMap = serviceDetailMap;
+    public RequestProcessor(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
     }
 
     public void process(Channel channel, Request request) {
@@ -33,17 +31,13 @@ public class RequestProcessor {
                                         .orElseThrow(() -> new RpcException("MethodName not present"));
 
             // Service
-            ServiceDetail<?> serviceDetail = serviceDetailMap.get(serviceName);
-            if (Objects.isNull(serviceDetail)) {
-                throw new RpcException("Service Not Found");
-            }
-            Method method = serviceDetail.getMethods().get(methodName);
-            if (Objects.isNull(method)) {
-                throw new RpcException("Method Not Found");
-            }
+            ServiceDefinition<?> serviceDefinition = serviceRegistry.getService(serviceName);
+
+            Method method = Optional.ofNullable(serviceDefinition.getMethods().get(methodName))
+                                    .orElseThrow(() -> new RpcException("Method Not Found"));
 
             Object[] params = request.getParams();
-            Object responseBody = doInvoke(method, serviceDetail.getInstance(), params);
+            Object responseBody = doInvoke(method, serviceDefinition.getInstance(), params);
             log.info("方法返回结果: {}", responseBody);
 
             response.setBody(responseBody);

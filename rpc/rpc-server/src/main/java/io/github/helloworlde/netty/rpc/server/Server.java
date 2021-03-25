@@ -1,23 +1,23 @@
 package io.github.helloworlde.netty.rpc.server;
 
-import io.github.helloworlde.netty.rpc.model.ServiceDetail;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.registry.ServiceInfo;
 import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
+import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
 import io.github.helloworlde.netty.rpc.server.transport.Transport;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class Server {
 
-    private final Map<String, ServiceDetail<?>> serviceDetailMap = new HashMap<>();
+
+    private final ServiceRegistry serviceRegistry = new ServiceRegistry();
+
+    private final Map<String, String> metadata = new HashMap<>();
 
     private int port = 9090;
 
@@ -26,8 +26,6 @@ public class Server {
     private String name;
 
     private String serviceId;
-
-    private Map<String, String> metadata = new HashMap<>();
 
     private Registry registry;
 
@@ -65,48 +63,27 @@ public class Server {
     }
 
     public Server addService(Class<?> service, Object instance) {
-        if (!serviceDetailMap.containsKey(service.getName())) {
-            Map<String, Method> methods = Arrays.stream(service.getMethods())
-                                                .collect(Collectors.toMap(Method::getName, m -> m));
-
-
-            ServiceDetail<?> serviceDetail = ServiceDetail.builder()
-                                                          .service(service)
-                                                          .instance(instance)
-                                                          .methods(methods)
-                                                          .build();
-
-            serviceDetailMap.put(service.getName(), serviceDetail);
-        }
-
+        serviceRegistry.addService(service, instance);
         return this;
     }
 
-    public void start() {
-        Thread thread = new Thread(this::startUp);
-        thread.start();
-    }
+    public void start() throws InterruptedException {
+        transport = new Transport();
 
-    private void startUp() {
-        try {
-            transport = new Transport();
+        RequestProcessor requestProcessor = new RequestProcessor(serviceRegistry);
 
-            RequestProcessor requestProcessor = new RequestProcessor(serviceDetailMap);
+        transport.doInit(requestProcessor);
+        this.port = transport.doBind(this.port);
 
-            transport.doInit(requestProcessor);
-            this.port = transport.doBind(this.port);
-
-            if (Objects.nonNull(this.registry)) {
-                doRegistry();
-            }
-            transport.waiting();
-        } catch (Exception e) {
-            log.error("Server 初始化失败: {}", e.getMessage(), e);
-        } finally {
-           this.shutdown();
+        if (Objects.nonNull(this.registry)) {
+            doRegistry();
         }
     }
 
+    public void awaitTermination() throws InterruptedException {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+        transport.awaitTermination();
+    }
 
     private void doRegistry() {
         try {

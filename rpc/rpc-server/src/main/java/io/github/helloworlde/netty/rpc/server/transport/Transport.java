@@ -16,25 +16,44 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class Transport {
 
+    private final AtomicBoolean init = new AtomicBoolean(false);
+
     ServerBootstrap serverBootstrap;
-    private EventLoopGroup bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("accept-group"));
-    private EventLoopGroup workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("io-event-group"));
-    private ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 100, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
-            new DefaultThreadFactory("business-group"));
+
+    private EventLoopGroup bossGroup;
+
+    private EventLoopGroup workerGroup;
+
+    private ThreadPoolExecutor executor;
+
     private Channel channel;
 
-    public void doInit(RequestProcessor requestProcessor) {
+    public synchronized void doInit(RequestProcessor requestProcessor) {
+        if (init.get()) {
+            return;
+        }
         log.info("Transport init");
+
+        bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("accept-group"));
+        workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("io-event-group"));
+        executor = new ThreadPoolExecutor(10, 100, 60L,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(),
+                new DefaultThreadFactory("business-group"));
+
         serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workerGroup)
                        .channel(NioServerSocketChannel.class)
                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                        .handler(new LoggingHandler(LogLevel.DEBUG))
                        .childHandler(new ServerChannelInitializer(requestProcessor, executor));
+
+        this.init.compareAndSet(false, true);
     }
 
     public int doBind(int port) throws InterruptedException {
@@ -63,7 +82,7 @@ public class Transport {
         this.executor.shutdown();
     }
 
-    public void waiting() throws InterruptedException {
+    public void awaitTermination() throws InterruptedException {
         log.info("Transport running...");
         this.channel.closeFuture().sync();
     }

@@ -12,7 +12,8 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceDetail<T> {
+public class ServiceDefinition<T> {
+
     private T service;
 
     private T instance;
