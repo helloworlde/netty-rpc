@@ -45,7 +45,7 @@ public class RequestProcessor {
             log.error("Handler request failed: {}", e.getMessage(), e);
             response.setError(e.getMessage());
         } catch (Exception e) {
-            log.error("Handler request error: {}", e.getCause().getMessage(), e);
+            log.error("Handler request error: {}", e.getMessage(), e);
             response.setError("INTERNAL ERROR");
         } finally {
             channel.writeAndFlush(response)
