@@ -2,7 +2,7 @@ package io.github.helloworlde.netty.example;
 
 import io.github.helloworlde.netty.example.service.HelloService;
 import io.github.helloworlde.netty.rpc.client.Client;
-import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
+import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.proxy.ServiceProxy;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,9 +19,10 @@ public class RpcExampleClient {
         Client client = null;
         try {
             client = new Client()
-                    .forTarget("RPC_SERVER")
-                    .nameResolver(new ConsulNameResolver("127.0.0.1", 8500))
-                    // .forAddress("127.0.0.1", 9091)
+                    // .forTarget("RPC_SERVER")
+                    // .nameResolver(new ConsulNameResolver("127.0.0.1", 8500))
+                    .loadBalancer(new RoundRobinLoadBalancer())
+                    .forAddress("127.0.0.1", 9096)
                     .start();
 
             log.info("Client 启动完成");
@@ -46,7 +47,7 @@ public class RpcExampleClient {
 
     private static void syncMultiple(HelloService helloService) {
         String response;
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000; i++) {
             try {
                 response = helloService.sayHello("啊哈啊啊啊啊 " + counter.getAndIncrement());
                 log.info(response);
@@ -62,7 +63,7 @@ public class RpcExampleClient {
 
         List<CompletableFuture<String>> futureList = new ArrayList<>();
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100; i++) {
             CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
                 log.info("发送请求: {}", counter.getAndIncrement());
                 return helloService.sayHello("" + counter.get());
