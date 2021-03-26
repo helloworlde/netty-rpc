@@ -23,12 +23,24 @@ public class HeartbeatTask {
     private final AtomicInteger failCounter = new AtomicInteger();
     private final ScheduledExecutorService executorService;
     private final Transport transport;
-    private int MAX_FAIL_COUNT = 5;
+    private final int MAX_FAIL_COUNT = 5;
 
     public HeartbeatTask(Transport transport) {
+        log.info("创建心跳");
         this.transport = transport;
         this.executorService = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory("heartbeat"));
-        executorService.scheduleWithFixedDelay(() -> new HeartbeatCheck(), 10, 5, TimeUnit.SECONDS);
+        this.executorService.scheduleAtFixedRate(() -> {
+            Boolean success = sendHeartbeat();
+            if (success) {
+                failCounter.set(0);
+            } else {
+                failCounter.incrementAndGet();
+                if (failCounter.get() > MAX_FAIL_COUNT) {
+                    log.info("已经心跳达到最大失败次数，关闭 Transport");
+                    transport.shutdown();
+                }
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     private Boolean sendHeartbeat() {
@@ -58,22 +70,5 @@ public class HeartbeatTask {
         log.info("关闭心跳");
         this.executorService.shutdown();
     }
-
-    class HeartbeatCheck implements Runnable {
-        @Override
-        public void run() {
-            Boolean success = sendHeartbeat();
-            if (success) {
-                failCounter.set(0);
-            } else {
-                failCounter.incrementAndGet();
-                if (failCounter.get() > MAX_FAIL_COUNT) {
-                    log.info("已经心跳达到最大失败次数，关闭 Transport");
-                    transport.shutdown();
-                }
-            }
-        }
-    }
-
 
 }
