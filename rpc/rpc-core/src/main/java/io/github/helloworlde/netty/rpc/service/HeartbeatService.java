@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.rpc.server.service;
+package io.github.helloworlde.netty.rpc.service;
 
 import io.github.helloworlde.netty.rpc.model.Heartbeat;
 

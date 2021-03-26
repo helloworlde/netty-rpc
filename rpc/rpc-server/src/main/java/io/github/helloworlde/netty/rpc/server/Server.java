@@ -4,9 +4,9 @@ import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.registry.ServiceInfo;
 import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
-import io.github.helloworlde.netty.rpc.server.service.HeartbeatService;
-import io.github.helloworlde.netty.rpc.server.service.impl.HeartbeatImpl;
 import io.github.helloworlde.netty.rpc.server.transport.Transport;
+import io.github.helloworlde.netty.rpc.service.HeartbeatService;
+import io.github.helloworlde.netty.rpc.service.impl.HeartbeatImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;

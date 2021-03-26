@@ -1,7 +1,7 @@
-package io.github.helloworlde.netty.rpc.server.service.impl;
+package io.github.helloworlde.netty.rpc.service.impl;
 
 import io.github.helloworlde.netty.rpc.model.Heartbeat;
-import io.github.helloworlde.netty.rpc.server.service.HeartbeatService;
+import io.github.helloworlde.netty.rpc.service.HeartbeatService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
