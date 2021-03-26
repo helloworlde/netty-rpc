@@ -1,5 +1,7 @@
 package io.github.helloworlde.netty.rpc.serialize;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,6 +15,8 @@ public class JsonSerialize implements Serialize {
 
     private JsonSerialize() {
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        this.objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
     }
 
     public static JsonSerialize getInstance() {
