@@ -12,13 +12,12 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Request {
+
     private Long requestId;
 
     private String serviceName;
 
     private String methodName;
-
-    private Class<?>[] paramTypes;
 
     private Object[] params;
 

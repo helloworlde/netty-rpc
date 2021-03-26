@@ -3,6 +3,7 @@ package io.github.helloworlde.netty.rpc.client;
 import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.lb.RandomLoadBalancer;
+import io.github.helloworlde.netty.rpc.client.nameresovler.FixedAddressNameResolver;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.ClientChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
@@ -17,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -42,7 +42,6 @@ public class Client {
 
     public Client forAddress(String host, int port) throws Exception {
         this.address = new InetSocketAddress(host, port);
-        loadBalancer.updateAddress(Collections.singletonList(address));
         return this;
     }
 
@@ -83,10 +82,12 @@ public class Client {
         this.loadBalancer.setBootstrap(bootstrap);
         if (Objects.nonNull(this.nameResolver)) {
             this.nameResolver.setAuthority(this.authority);
-            this.nameResolver.setLoadBalancer(this.loadBalancer);
-            this.nameResolver.resolve();
             this.executor.scheduleAtFixedRate(() -> nameResolver.resolve(), 5, 20, TimeUnit.SECONDS);
+        } else {
+            this.nameResolver = new FixedAddressNameResolver(address);
         }
+        this.nameResolver.setLoadBalancer(loadBalancer);
+        this.nameResolver.resolve();
         return this;
     }
 
