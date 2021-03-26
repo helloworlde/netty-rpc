@@ -4,6 +4,8 @@ import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.registry.ServiceInfo;
 import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
+import io.github.helloworlde.netty.rpc.server.service.HeartbeatService;
+import io.github.helloworlde.netty.rpc.server.service.impl.HeartbeatImpl;
 import io.github.helloworlde.netty.rpc.server.transport.Transport;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,7 +71,7 @@ public class Server {
 
     public void start() throws InterruptedException {
         transport = new Transport();
-
+        serviceRegistry.addService(HeartbeatService.class, new HeartbeatImpl());
         RequestProcessor requestProcessor = new RequestProcessor(serviceRegistry);
 
         transport.doInit(requestProcessor);
