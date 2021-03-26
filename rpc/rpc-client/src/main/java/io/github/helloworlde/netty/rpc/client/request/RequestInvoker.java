@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class RequestInvoker {
 
-    private final AtomicLong requestSeq = new AtomicLong();
+    private static final AtomicLong requestSeq = new AtomicLong();
 
     private final LoadBalancer loadBalancer;
 
@@ -18,13 +18,17 @@ public class RequestInvoker {
         this.loadBalancer = loadBalancer;
     }
 
-    private Request createRequest(Class<?> proxyClass, String methodName, Object[] params) throws Exception {
+    public static Request createRequest(Class<?> proxyClass, String methodName, Object... params) {
         return Request.builder()
-                      .requestId(requestSeq.getAndIncrement())
+                      .requestId(getNextSeq())
                       .serviceName(proxyClass.getName())
                       .methodName(methodName)
                       .params(params)
                       .build();
+    }
+
+    private synchronized static Long getNextSeq() {
+        return requestSeq.getAndIncrement();
     }
 
     public Object sendRequest(Class<?> serviceClass, String methodName, Object[] args) throws Exception {

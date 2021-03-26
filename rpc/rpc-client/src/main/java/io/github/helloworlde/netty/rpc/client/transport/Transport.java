@@ -1,10 +1,12 @@
 package io.github.helloworlde.netty.rpc.client.transport;
 
 import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
+import io.github.helloworlde.netty.rpc.client.heartbeat.HeartbeatTask;
 import io.github.helloworlde.netty.rpc.client.request.ResponseFuture;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
@@ -21,6 +23,8 @@ public class Transport {
 
     private SocketAddress address;
 
+    private HeartbeatTask heartbeatTask;
+
     public Transport(SocketAddress address, Bootstrap bootstrap) {
         this.address = address;
         this.bootstrap = bootstrap;
@@ -32,12 +36,19 @@ public class Transport {
         }
         log.info("开始连接: {}", this.address);
 
-        this.channel = bootstrap.connect(address)
-                                .sync()
-                                .addListener(f -> log.info("连接: {} 成功", this.address))
-                                .channel();
-        log.info("channel: {}", channel);
-        this.handler = this.channel.pipeline().get(ClientHandler.class);
+        ChannelFuture future = bootstrap.connect(address)
+                                        .sync()
+                                        .await();
+
+        if (future.isSuccess()) {
+            log.info("连接: {} 成功", this.address);
+            this.heartbeatTask = new HeartbeatTask(this);
+            this.channel = future.channel();
+            log.info("channel: {}", channel);
+            this.handler = this.channel.pipeline().get(ClientHandler.class);
+        } else {
+            throw new IllegalStateException(String.format("连接 %s 失败", this.address));
+        }
     }
 
     public boolean isActive() {
@@ -51,6 +62,7 @@ public class Transport {
     public void shutdown() {
         log.info("开始关闭连接: {}", this.address);
         this.channel.flush();
+        this.heartbeatTask.shutdown();
         this.channel.disconnect().addListener(f -> log.info("Disconnect completed"));
     }
 
