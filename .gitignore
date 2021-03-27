@@ -20,3 +20,4 @@ tls/src/main/resources/cert/private.key
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+*/out
