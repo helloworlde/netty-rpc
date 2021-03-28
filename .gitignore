@@ -21,3 +21,4 @@ tls/src/main/resources/cert/private.key
 # Editor-based HTTP Client requests
 /httpRequests/
 */out
+out
