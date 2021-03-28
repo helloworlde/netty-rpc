@@ -40,7 +40,7 @@ public class Client {
     private EventLoopGroup workerGroup;
 
 
-    public Client forAddress(String host, int port) throws Exception {
+    public Client forAddress(String host, int port) {
         this.address = new InetSocketAddress(host, port);
         return this;
     }
