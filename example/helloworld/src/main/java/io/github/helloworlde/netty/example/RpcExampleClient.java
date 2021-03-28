@@ -35,9 +35,6 @@ public class RpcExampleClient {
 
             asyncMultiple(helloService);
             syncMultiple(helloService);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(client::shutdown));
-
         } catch (Exception e) {
             log.info("异常: {}", e.getMessage(), e);
         } finally {
@@ -47,7 +44,7 @@ public class RpcExampleClient {
 
     private static void syncMultiple(HelloService helloService) {
         String response;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             try {
                 response = helloService.sayHello("啊哈啊啊啊啊 " + counter.getAndIncrement());
                 log.info(response);

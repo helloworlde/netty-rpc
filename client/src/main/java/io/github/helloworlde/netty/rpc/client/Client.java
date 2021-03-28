@@ -93,11 +93,14 @@ public class Client {
 
     public void shutdown() {
         try {
-            log.info("Shutting down...");
+            log.info("Start shutting down...");
+            this.loadBalancer.shutdown();
             this.executor.shutdown();
             this.workerGroup.shutdownGracefully();
         } catch (Exception e) {
             log.error("关闭错误: {}", e.getMessage(), e);
+        } finally {
+            log.info("Shutting down completed.");
         }
     }
 

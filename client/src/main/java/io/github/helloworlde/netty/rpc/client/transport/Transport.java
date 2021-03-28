@@ -63,7 +63,7 @@ public class Transport {
         log.info("开始关闭连接: {}", this.address);
         this.channel.flush();
         this.heartbeatTask.shutdown();
-        this.channel.disconnect().addListener(f -> log.info("Disconnect completed"));
+        this.channel.disconnect();
     }
 
     public void write(Request request, ResponseFuture<Object> responseFuture) {

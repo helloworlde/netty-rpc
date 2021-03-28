@@ -65,4 +65,8 @@ public abstract class LoadBalancer {
         this.transports = newTransport;
         log.info("更新后的列表: {}", this.transports.stream().map(Transport::getAddress).collect(Collectors.toList()));
     }
+
+    public void shutdown() {
+        this.transports.forEach(Transport::shutdown);
+    }
 }
