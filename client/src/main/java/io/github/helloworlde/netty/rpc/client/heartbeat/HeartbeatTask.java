@@ -44,6 +44,10 @@ public class HeartbeatTask {
     }
 
     private Boolean sendHeartbeat() {
+        if (!transport.isActive()) {
+            log.warn("Transport is not active now...");
+            return false;
+        }
         ResponseFuture<Object> responseFuture;
         try {
             long sequenceId = requestSeq.getAndIncrement();
