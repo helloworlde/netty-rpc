@@ -1,14 +1,6 @@
-rootProject.name = "netty-sample"
+rootProject.name = "netty-rpc"
 
-include("helloworld")
-include("http")
-include("pojo")
-include("multiple-handler")
-include("protobuf")
-include("heartbeat")
-include("http2")
-include("rpc:rpc-core")
-include("rpc:rpc-client")
-include("rpc:rpc-server")
-include("rpc:rpc-example")
-include("telnet")
+include("core")
+include("client")
+include("server")
+include("example:helloworld")
