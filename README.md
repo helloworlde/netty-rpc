@@ -13,47 +13,27 @@
 2. 实现服务端
 
 ```java
-public class HelloworldServer {
+Server server = Server.server()
+                      .port(9096)
+                      .addService(HelloService.class, new HelloServiceImpl());
 
-    public static void main(String[] args) throws InterruptedException {
-        Server server = Server.server()
-                              .port(9096)
-                              .addService(HelloService.class, new HelloServiceImpl());
-
-        server.start();
-        server.awaitTermination();
-    }
-}
-
-@Slf4j
-public class HelloServiceImpl implements HelloService {
-
-    @Override
-    public String sayHello(String message) {
-        log.info("新的请求: {}", message);
-        return "Hello " + message;
-    }
-}
+server.start();
+server.awaitTermination();
 ```
 
 3. 实现客户端
 
 ```java
-public class HelloworldClient {
+Client client = new Client()
+        .forAddress("127.0.0.1", 9096)
+        .start();
 
-    public static void main(String[] args) throws Exception {
-        Client client = new Client()
-                .forAddress("127.0.0.1", 9096)
-                .start();
+HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
 
-        HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
+String response = helloService.sayHello("Netty RPC");
+log.info("返回的响应结果: {}", response);
 
-        String response = helloService.sayHello("Netty RPC");
-        log.info("返回的响应结果: {}", response);
-
-        client.shutdown();
-    }
-}
+client.shutdown();
 ```
 
 ## 协议
