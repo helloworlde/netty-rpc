@@ -1,7 +1,6 @@
 var nettyVersion = "4.1.59.Final"
 val slf4jVersion = "1.7.25"
-val jacksonVersion = "2.12.2"
-val consulVersion = "1.5.1"
+val nettyRpcVersion = "0.0.1-SNAPSHOT"
 
 repositories {
     mavenLocal()
@@ -16,17 +15,10 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":client"))
-    implementation(project(":server"))
-
-    implementation("io.netty:netty-all:${nettyVersion}")
+    implementation("io.github.helloworlde:netty-rpc-core:${nettyRpcVersion}")
+    implementation("io.github.helloworlde:netty-rpc-client:${nettyRpcVersion}")
+    implementation("io.github.helloworlde:netty-rpc-server:${nettyRpcVersion}")
 
     implementation("org.slf4j:slf4j-api:${slf4jVersion}")
     implementation("org.slf4j:slf4j-simple:${slf4jVersion}")
-
-    implementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
-    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
-
 }
