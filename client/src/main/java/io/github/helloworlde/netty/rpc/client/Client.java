@@ -39,6 +39,12 @@ public class Client {
 
     private EventLoopGroup workerGroup;
 
+    private Client() {
+    }
+
+    public static Client client() {
+        return new Client();
+    }
 
     public Client forAddress(String host, int port) {
         this.address = new InetSocketAddress(host, port);

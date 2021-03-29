@@ -33,6 +33,9 @@ public class Server {
 
     private Transport transport;
 
+    private Server() {
+    }
+
     public static Server server() {
         return new Server();
     }
