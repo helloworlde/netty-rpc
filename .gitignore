@@ -3,11 +3,6 @@
 
 # Ignore Gradle build output directory
 build
-tls/src/main/resources/cert/ca.cert
-tls/src/main/resources/cert/ca.key
-tls/src/main/resources/cert/ca.srl
-tls/src/main/resources/cert/private.csr
-tls/src/main/resources/cert/private.key
 
 .idea/
 */build
@@ -22,3 +17,4 @@ tls/src/main/resources/cert/private.key
 /httpRequests/
 */out
 out
+*.class
