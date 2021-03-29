@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 public class HelloworldClient {
 
     public static void main(String[] args) throws Exception {
-        Client client = new Client()
-                .forAddress("127.0.0.1", 9096)
-                .start();
+        Client client = Client.client()
+                              .forAddress("127.0.0.1", 9096)
+                              .start();
 
         HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
 

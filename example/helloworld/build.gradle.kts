@@ -4,6 +4,9 @@ val nettyRpcVersion = "0.0.1-SNAPSHOT"
 
 repositories {
     mavenLocal()
+    maven {
+        setUrl("https://maven.pkg.github.com/helloworlde/netty-rpc")
+    }
     mavenCentral()
     maven {
         setUrl("https://maven.aliyun.com/repository/apache-snapshots")
