@@ -15,9 +15,14 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.helloworlde:netty-rpc-core:${nettyRpcVersion}")
-    implementation("io.github.helloworlde:netty-rpc-client:${nettyRpcVersion}")
-    implementation("io.github.helloworlde:netty-rpc-server:${nettyRpcVersion}")
+    implementation(project(":core"))
+    implementation(project(":client"))
+    implementation(project(":server"))
+
+//
+//    implementation("io.github.helloworlde:netty-rpc-core:${nettyRpcVersion}")
+//    implementation("io.github.helloworlde:netty-rpc-client:${nettyRpcVersion}")
+//    implementation("io.github.helloworlde:netty-rpc-server:${nettyRpcVersion}")
 
     implementation("org.slf4j:slf4j-api:${slf4jVersion}")
     implementation("org.slf4j:slf4j-simple:${slf4jVersion}")
