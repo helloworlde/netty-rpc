@@ -7,7 +7,19 @@
 1. 引入依赖
 
 ```groovy
+val nettyRpcVersion = "0.0.1-SNAPSHOT"
 
+repositories {
+    maven {
+        setUrl("https://maven.pkg.github.com/helloworlde/netty-rpc")
+    }
+}
+
+dependencies {
+    implementation("io.github.helloworlde:netty-rpc-core:${nettyRpcVersion}")
+    implementation("io.github.helloworlde:netty-rpc-client:${nettyRpcVersion}")
+    implementation("io.github.helloworlde:netty-rpc-server:${nettyRpcVersion}")
+}
 ```
 
 2. 实现服务端
