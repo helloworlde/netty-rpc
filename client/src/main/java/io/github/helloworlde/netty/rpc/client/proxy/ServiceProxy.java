@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 @Slf4j
-public class ServiceProxy<T> implements InvocationHandler {
+public class ServiceProxy implements InvocationHandler {
 
     private final RequestInvoker invoker;
 
@@ -18,7 +18,7 @@ public class ServiceProxy<T> implements InvocationHandler {
     }
 
     @SuppressWarnings("all")
-    public T newProxy(Class<T> serviceClass) {
+    public <T> T newProxy(Class<T> serviceClass) {
         return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{serviceClass}, this);
     }
 

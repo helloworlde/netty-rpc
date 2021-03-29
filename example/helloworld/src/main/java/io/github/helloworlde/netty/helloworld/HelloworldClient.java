@@ -13,7 +13,7 @@ public class HelloworldClient {
                               .forAddress("127.0.0.1", 9096)
                               .start();
 
-        HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
+        HelloService helloService = new ServiceProxy(client).newProxy(HelloService.class);
 
         String response = helloService.sayHello("Netty RPC");
         log.info("返回的响应结果: {}", response);
