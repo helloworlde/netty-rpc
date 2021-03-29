@@ -22,7 +22,24 @@ dependencies {
 }
 ```
 
-2. 实现服务端
+2. 定义并实现服务
+
+```java
+public interface HelloService {
+    String sayHello(String message);
+}
+
+@Slf4j
+public class HelloServiceImpl implements HelloService {
+
+    @Override
+    public String sayHello(String message) {
+        return "Hello " + message;
+    }
+}
+```
+
+3. 启动服务端
 
 ```java
 Server server = Server.server()
@@ -33,12 +50,12 @@ server.start();
 server.awaitTermination();
 ```
 
-3. 实现客户端
+4. 启动客户端
 
 ```java
-Client client = new Client()
-        .forAddress("127.0.0.1", 9096)
-        .start();
+Client client = Client.client()
+                      .forAddress("127.0.0.1", 9096)
+                      .start();
 
 HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
 
@@ -50,11 +67,9 @@ client.shutdown();
 
 ## 协议
 
-使用自定义协议，格式为：
-
-`MagicNumber + Serialize + Length + Body`
+使用自定义协议，格式为：`MagicNumber + Serialize + Length + Body`
 
 - `MagicNumber` 为 `0x1024`，是一个 int 值，长度为 4 个字节
-- `Serialize` 表示协议，默认使用 JSON 协议，是一个 int 值，长度为 4 个字节
+- `Serialize` 表示序列化方式，默认使用 JSON 协议，是一个 int 值，长度为 4 个字节
 - `Length` 表示 `Body` 的长度，是一个 int 值，长度为 4 个字节
 - `Body` 表示请求的具体内容，长度为 `Length` 个字节
