@@ -1,10 +1,10 @@
 package io.github.helloworlde.netty.register;
 
-import io.github.helloworlde.netty.register.service.HelloService;
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
 import io.github.helloworlde.netty.rpc.client.proxy.ServiceProxy;
+import io.github.helloworlde.netty.rpc.example.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

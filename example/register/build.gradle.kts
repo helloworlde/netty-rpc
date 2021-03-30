@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":client"))
     implementation(project(":server"))
 
+    implementation(project(":example:sdk"))
 //
 //    implementation("io.github.helloworlde:netty-rpc-core:${nettyRpcVersion}")
 //    implementation("io.github.helloworlde:netty-rpc-client:${nettyRpcVersion}")

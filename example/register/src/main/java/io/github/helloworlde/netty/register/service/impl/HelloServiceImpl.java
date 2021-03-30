@@ -1,6 +1,6 @@
 package io.github.helloworlde.netty.register.service.impl;
 
-import io.github.helloworlde.netty.register.service.HelloService;
+import io.github.helloworlde.netty.rpc.example.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
