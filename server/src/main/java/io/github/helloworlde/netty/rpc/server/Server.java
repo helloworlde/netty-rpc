@@ -87,7 +87,6 @@ public class Server {
     }
 
     public void awaitTermination() throws InterruptedException {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         transport.awaitTermination();
     }
 
