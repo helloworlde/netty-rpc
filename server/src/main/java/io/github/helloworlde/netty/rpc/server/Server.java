@@ -7,19 +7,20 @@ import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
 import io.github.helloworlde.netty.rpc.server.transport.Transport;
 import io.github.helloworlde.netty.rpc.service.HeartbeatService;
 import io.github.helloworlde.netty.rpc.service.impl.HeartbeatImpl;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Data
 @Slf4j
 public class Server {
 
+    private ServiceRegistry serviceRegistry = new ServiceRegistry();
 
-    private final ServiceRegistry serviceRegistry = new ServiceRegistry();
-
-    private final Map<String, String> metadata = new HashMap<>();
+    private Map<String, String> metadata = new HashMap<>();
 
     private int port = 9090;
 
@@ -109,9 +110,11 @@ public class Server {
 
     public void shutdown() {
         log.info("Server 注销");
-        this.registry.deregister(ServiceInfo.builder()
-                                            .id(this.serviceId)
-                                            .build());
+        if (Objects.nonNull(this.registry)) {
+            this.registry.deregister(ServiceInfo.builder()
+                                                .id(this.serviceId)
+                                                .build());
+        }
         this.transport.shutdown();
     }
 }

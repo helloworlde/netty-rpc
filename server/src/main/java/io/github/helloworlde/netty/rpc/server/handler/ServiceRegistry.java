@@ -28,6 +28,6 @@ public class ServiceRegistry {
 
     public ServiceDefinition<?> getService(String serviceName) {
         return Optional.ofNullable(serviceDefinitionMap.get(serviceName))
-                       .orElseThrow(() -> new RpcException("Service Not Found"));
+                       .orElseThrow(() -> new RpcException(String.format("Service '%s' Not Found", serviceName)));
     }
 }
