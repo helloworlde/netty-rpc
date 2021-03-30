@@ -1,5 +1,6 @@
 package io.github.helloworlde.netty.rpc.starter.server;
 
+import io.github.helloworlde.netty.rpc.registry.ConsulRegistry;
 import io.github.helloworlde.netty.rpc.server.Server;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
 import io.github.helloworlde.netty.rpc.starter.annotation.NettyRpcService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +19,12 @@ import java.util.stream.Collectors;
 public class NettyRpcServiceFactory implements BeanFactoryAware {
 
     private DefaultListableBeanFactory beanFactory;
+
+    private Environment environment;
+
+    public NettyRpcServiceFactory(Environment environment) {
+        this.environment = environment;
+    }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -41,6 +49,9 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
         MutablePropertyValues properties = new MutablePropertyValues();
         properties.add("port", 9090);
         properties.add("serviceRegistry", registry);
+        properties.add("address", "172.30.78.154");
+        properties.add("name", environment.getProperty("spring.application.name"));
+        properties.add("registry", new ConsulRegistry("127.0.0.1", 8500));
         beanDefinition.setPropertyValues(properties);
 
         beanDefinition.setInitMethodName("start");
