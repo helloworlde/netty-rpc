@@ -18,7 +18,6 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":core"))
     implementation(project(":client"))
     implementation(project(":server"))
 

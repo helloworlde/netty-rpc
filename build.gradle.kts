@@ -32,8 +32,6 @@ subprojects {
     dependencies {
         implementation("io.netty:netty-all:${nettyVersion}")
 
-        implementation("org.slf4j:slf4j-api:${slf4jVersion}")
-        implementation("org.slf4j:slf4j-simple:${slf4jVersion}")
         implementation("com.orbitz.consul:consul-client:${consulVersion}")
 
         implementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
