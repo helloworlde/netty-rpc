@@ -7,11 +7,15 @@ import com.orbitz.consul.model.agent.ImmutableRegistration;
 import com.orbitz.consul.model.agent.Registration;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 @Slf4j
 public class ConsulRegistry extends Registry {
 
     private final Consul client;
     private final AgentClient agentClient;
+
+    private String serviceId;
 
     public ConsulRegistry(String host, Integer port) {
         HostAndPort hostAndPort = HostAndPort.fromParts(host, port);
@@ -24,16 +28,17 @@ public class ConsulRegistry extends Registry {
     }
 
     @Override
-    public boolean register(ServiceInfo serviceInfo) {
+    public boolean register(String name, String address, int port, Map<String, String> metadata) {
         try {
-            String check = String.format("%s:%d", serviceInfo.getAddress(), serviceInfo.getPort());
+            this.serviceId = String.format("%s-%s-%d", name, address, port);
+            String check = String.format("%s:%d", address, port);
             Registration registration = ImmutableRegistration.builder()
-                                                             .id(serviceInfo.getId())
-                                                             .name(serviceInfo.getName())
-                                                             .address(serviceInfo.getAddress())
-                                                             .port(serviceInfo.getPort())
+                                                             .id(serviceId)
+                                                             .name(name)
+                                                             .address(address)
+                                                             .port(port)
                                                              .check(Registration.RegCheck.tcp(check, 10, 2))
-                                                             .meta(serviceInfo.getMetadata())
+                                                             .meta(metadata)
                                                              .build();
             agentClient.register(registration);
         } catch (Exception e) {
@@ -44,9 +49,9 @@ public class ConsulRegistry extends Registry {
     }
 
     @Override
-    public boolean deregister(ServiceInfo serviceInfo) {
+    public boolean unregister() {
         try {
-            agentClient.deregister(serviceInfo.getId());
+            agentClient.deregister(this.serviceId);
         } catch (Exception e) {
             log.error("注销服务失败: {}", e.getMessage(), e);
             return false;
