@@ -13,7 +13,9 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NettyRpcServiceFactory implements BeanFactoryAware {
@@ -43,6 +45,8 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
                  .collect(Collectors.toMap(this::getInterface, b -> b))
                  .forEach(registry::addService);
 
+        Map<String, String> metadata = new HashMap<>();
+
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(Server.class);
 
@@ -52,9 +56,10 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
         properties.add("address", "172.30.78.154");
         properties.add("name", environment.getProperty("spring.application.name"));
         properties.add("registry", new ConsulRegistry("127.0.0.1", 8500));
+        properties.add("metadata", metadata);
         beanDefinition.setPropertyValues(properties);
 
-        beanDefinition.setInitMethodName("start");
+        beanDefinition.setInitMethodName("init");
         beanDefinition.setDestroyMethodName("shutdown");
 
         beanFactory.registerBeanDefinition("nettyRpcServer", beanDefinition);

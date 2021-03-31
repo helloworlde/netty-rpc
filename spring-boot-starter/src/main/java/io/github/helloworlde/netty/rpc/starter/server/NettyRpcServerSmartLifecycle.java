@@ -14,14 +14,17 @@ public class NettyRpcServerSmartLifecycle implements SmartLifecycle {
     private Server server;
 
     public NettyRpcServerSmartLifecycle(NettyRpcServiceFactory factory) {
-        log.info("初始化 Factory");
         this.factory = factory;
     }
 
     @Override
     public void start() {
-        log.info("服务端开始启动");
-        this.server = this.factory.createServer();
+        try {
+            this.server = this.factory.createServer();
+            this.server.start();
+        } catch (InterruptedException e) {
+            log.error("启动失败: {}", e.getMessage(), e);
+        }
     }
 
     @Override
