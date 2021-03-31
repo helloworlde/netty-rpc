@@ -23,7 +23,7 @@ public abstract class LoadBalancer {
         this.bootstrap = bootstrap;
     }
 
-    public synchronized void updateAddress(List<SocketAddress> resolvedAddresses) {
+    public synchronized void onResult(List<SocketAddress> resolvedAddresses) {
         List<Transport> newTransport = new ArrayList<>(this.transports);
         List<SocketAddress> addresses = new ArrayList<>(resolvedAddresses);
 

@@ -13,7 +13,7 @@ public class FixedAddressNameResolver extends NameResolver {
     }
 
     @Override
-    public void resolve() {
-        loadBalancer.updateAddress(addresses);
+    public void refresh() {
+        loadBalancer.onResult(addresses);
     }
 }

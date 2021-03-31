@@ -10,5 +10,13 @@ public abstract class NameResolver {
 
     protected LoadBalancer loadBalancer;
 
-    public abstract void resolve();
+    public void start() {
+        this.refresh();
+    }
+
+    public void shutdown() {
+
+    }
+
+    public abstract void refresh();
 }
