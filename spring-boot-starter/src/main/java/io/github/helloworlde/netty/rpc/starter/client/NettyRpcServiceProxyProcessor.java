@@ -17,7 +17,7 @@ public class NettyRpcServiceProxyProcessor implements BeanPostProcessor {
 
     private final NettyRpcClientFactory clientFactory;
 
-    private final Map<String, Class<?>> beansToProcess = new ConcurrentHashMap<>();
+    private final Map<String, Class<?>> waitProcessBeanMap = new ConcurrentHashMap<>();
 
     public NettyRpcServiceProxyProcessor(NettyRpcClientFactory clientFactory) {
         this.clientFactory = clientFactory;
@@ -29,7 +29,7 @@ public class NettyRpcServiceProxyProcessor implements BeanPostProcessor {
 
         Stream.of(beanClass.getDeclaredFields())
               .filter(field -> field.isAnnotationPresent(NettyRpcClient.class))
-              .forEach(field -> beansToProcess.putIfAbsent(beanName, beanClass));
+              .forEach(field -> waitProcessBeanMap.putIfAbsent(beanName, beanClass));
 
         return bean;
     }
@@ -37,8 +37,8 @@ public class NettyRpcServiceProxyProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         try {
-            if (beansToProcess.containsKey(beanName)) {
-                for (Field field : beansToProcess.get(beanName).getDeclaredFields()) {
+            if (waitProcessBeanMap.containsKey(beanName)) {
+                for (Field field : waitProcessBeanMap.get(beanName).getDeclaredFields()) {
                     NettyRpcClient annotation = field.getAnnotation(NettyRpcClient.class);
                     field.setAccessible(true);
                     Object serviceProxy = createServiceProxy(field.getType(), annotation.value());

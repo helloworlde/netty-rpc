@@ -23,19 +23,17 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
     }
 
     public Client getClient(String name) {
-        String beanName = String.format("Client-%s", name);
-
         Client client;
         try {
-            client = beanFactory.getBean(beanName, Client.class);
+            client = beanFactory.getBean(name, Client.class);
         } catch (BeansException e) {
             log.info("Client for authority '{}' not exist, create a new one", name);
-            client = initClient(name, beanName);
+            client = initClient(name);
         }
         return client;
     }
 
-    private Client initClient(String name, String beanName) {
+    private Client initClient(String name) {
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(Client.class);
 
@@ -46,11 +44,11 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
 
         beanDefinition.setPropertyValues(properties);
 
-        beanDefinition.setInitMethodName("start");
+        beanDefinition.setInitMethodName("init");
         beanDefinition.setDestroyMethodName("shutdown");
 
-        beanFactory.registerBeanDefinition(beanName, beanDefinition);
+        beanFactory.registerBeanDefinition(name, beanDefinition);
 
-        return beanFactory.getBean(beanName, Client.class);
+        return beanFactory.getBean(name, Client.class);
     }
 }

@@ -29,6 +29,8 @@ public class Client {
 
     private EventLoopGroup workerGroup;
 
+    public Client() {
+    }
 
     public Client(String authority,
                   NameResolver nameResolver,
