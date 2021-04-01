@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -36,24 +37,29 @@ public class NettyRpcServiceProxyProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        try {
-            if (waitProcessBeanMap.containsKey(beanName)) {
-                for (Field field : waitProcessBeanMap.get(beanName).getDeclaredFields()) {
-                    NettyRpcClient annotation = field.getAnnotation(NettyRpcClient.class);
-                    field.setAccessible(true);
-                    Object serviceProxy = createServiceProxy(field.getType(), annotation.value());
-                    field.set(bean, serviceProxy);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Optional.ofNullable(waitProcessBeanMap.get(beanName))
+                .map(Class::getDeclaredFields)
+                .map(Stream::of)
+                .ifPresent(stream -> stream.filter(f -> f.isAnnotationPresent(NettyRpcClient.class))
+                                           .forEach(field -> createServiceBean(bean, field)));
+
         return bean;
+    }
+
+    private void createServiceBean(Object bean, Field field) {
+        try {
+            NettyRpcClient annotation = field.getAnnotation(NettyRpcClient.class);
+            Object serviceProxy = createServiceProxy(field.getType(), annotation.value());
+
+            field.setAccessible(true);
+            field.set(bean, serviceProxy);
+        } catch (IllegalAccessException e) {
+            log.error("初始化客户端失败: {}", e.getMessage(), e);
+        }
     }
 
     private Object createServiceProxy(Class<?> serviceClass, String authority) {
         Client client = clientFactory.getClient(authority);
         return new ServiceProxy(client).newProxy(serviceClass);
     }
-
 }
