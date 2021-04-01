@@ -11,6 +11,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.cloud.commons.util.InetUtils;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +22,12 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
 
     private DefaultListableBeanFactory beanFactory;
 
-    private ServerProperties serverProperties;
-    private InetUtils inetUtils;
+    private final ApplicationContext context;
+    private final ServerProperties serverProperties;
+    private final InetUtils inetUtils;
 
-    public NettyRpcServiceFactory(InetUtils inetUtils, ServerProperties serverProperties) {
+    public NettyRpcServiceFactory(ApplicationContext context, InetUtils inetUtils, ServerProperties serverProperties) {
+        this.context = context;
         this.inetUtils = inetUtils;
         this.serverProperties = serverProperties;
     }
@@ -49,15 +52,20 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(Server.class);
 
-        String address = Optional.ofNullable(serverProperties.getAddress())
-                                 .orElse(inetUtils.findFirstNonLoopbackAddress().getHostAddress());
-
         MutablePropertyValues properties = new MutablePropertyValues();
         properties.add("serviceRegistry", registry);
-        properties.add("name", serverProperties.getName());
-        properties.add("address", address);
         properties.add("port", serverProperties.getPort());
-        properties.add("metadata", serverProperties.getMetadata());
+
+
+        String address = Optional.ofNullable(serverProperties.getRegistry().getAddress())
+                                 .orElse(inetUtils.findFirstNonLoopbackAddress().getHostAddress());
+        String name = Optional.ofNullable(serverProperties.getRegistry().getName())
+                              .orElse(context.getApplicationName());
+
+
+        properties.add("name", name);
+        properties.add("address", address);
+        properties.add("metadata", serverProperties.getRegistry().getMetadata());
         properties.add("registry", new ConsulRegistry("127.0.0.1", 8500));
         beanDefinition.setPropertyValues(properties);
 

@@ -1,22 +1,30 @@
 package io.github.helloworlde.netty.rpc.starter.server;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@ConfigurationProperties(prefix = "netty.prc.server")
+@ConfigurationProperties(prefix = "netty.rpc.server")
 public class ServerProperties {
+
+    private boolean enabled = true;
 
     private int port = 9090;
 
-    @Value("${spring.application.name:server}")
-    private String name;
+    @NestedConfigurationProperty
+    private Registry registry = new Registry();
 
-    private String address;
+    @Data
+    static class Registry {
 
-    private Map<String, String> metadata = new HashMap<>();
+        private String name;
+
+        private String address;
+
+        private Map<String, String> metadata = new HashMap<>();
+    }
 }
