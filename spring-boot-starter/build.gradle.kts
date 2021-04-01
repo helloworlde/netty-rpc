@@ -24,8 +24,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.cloud:spring-cloud-commons")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springVersion}")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
 
 publishing {
     publications {
