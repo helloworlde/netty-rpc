@@ -1,10 +1,12 @@
 package io.github.helloworlde.netty.rpc.starter.client;
 
+import io.github.helloworlde.netty.rpc.client.nameresovler.ServerAddress;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -16,7 +18,10 @@ public class ClientProperties {
     private Map<String, ClientConfig> config = new HashMap<>();
 
     @NestedConfigurationProperty
-    private Registry registry = new Registry();
+    private Register register = new Register();
+
+    @NestedConfigurationProperty
+    private Resolver resolver = new Resolver();
 
     @Data
     static class ClientConfig {
@@ -29,7 +34,16 @@ public class ClientProperties {
     }
 
     @Data
-    static class Registry {
+    static class Resolver {
+
+        private List<ServerAddress> addresses;
+    }
+
+
+    @Data
+    static class Register {
+
+        private boolean enabled = true;
 
         private String name;
 

@@ -2,7 +2,8 @@ package io.github.helloworlde.netty.rpc.starter.client;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
-import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
+import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
+import io.github.helloworlde.netty.rpc.registry.Registry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
@@ -15,6 +16,15 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 public class NettyRpcClientFactory implements BeanFactoryAware {
 
     private DefaultListableBeanFactory beanFactory;
+
+    private final NameResolver nameResolver;
+
+    private final Registry registry;
+
+    public NettyRpcClientFactory(Registry registry, NameResolver nameResolver) {
+        this.registry = registry;
+        this.nameResolver = nameResolver;
+    }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -39,7 +49,8 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
 
         MutablePropertyValues properties = new MutablePropertyValues();
         properties.add("authority", name);
-        properties.add("nameResolver", new ConsulNameResolver("127.0.0.1", 8500));
+        properties.add("nameResolver", this.nameResolver);
+        properties.add("registry", this.registry);
         properties.add("loadBalancer", new RoundRobinLoadBalancer());
 
         beanDefinition.setPropertyValues(properties);
