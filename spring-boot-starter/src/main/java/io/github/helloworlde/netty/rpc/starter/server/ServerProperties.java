@@ -16,10 +16,12 @@ public class ServerProperties {
     private int port = 9090;
 
     @NestedConfigurationProperty
-    private Registry registry = new Registry();
+    private Register register = new Register();
 
     @Data
-    static class Registry {
+    static class Register {
+
+        private boolean enabled = true;
 
         private String name;
 

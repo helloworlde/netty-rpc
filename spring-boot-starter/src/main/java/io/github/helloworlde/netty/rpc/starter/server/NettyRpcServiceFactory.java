@@ -1,6 +1,6 @@
 package io.github.helloworlde.netty.rpc.starter.server;
 
-import io.github.helloworlde.netty.rpc.registry.ConsulRegistry;
+import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.server.Server;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
 import io.github.helloworlde.netty.rpc.starter.annotation.NettyRpcService;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,12 +24,20 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
     private DefaultListableBeanFactory beanFactory;
 
     private final ApplicationContext context;
+
     private final ServerProperties serverProperties;
+
+    private final Registry registry;
+
     private final InetUtils inetUtils;
 
-    public NettyRpcServiceFactory(ApplicationContext context, InetUtils inetUtils, ServerProperties serverProperties) {
+    public NettyRpcServiceFactory(ApplicationContext context,
+                                  InetUtils inetUtils,
+                                  @Nullable Registry registry,
+                                  ServerProperties serverProperties) {
         this.context = context;
         this.inetUtils = inetUtils;
+        this.registry = registry;
         this.serverProperties = serverProperties;
     }
 
@@ -42,31 +51,31 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
 
         List<String> beanNames = Arrays.asList(this.beanFactory.getBeanNamesForAnnotation(NettyRpcService.class));
 
-        ServiceRegistry registry = new ServiceRegistry();
+        ServiceRegistry serviceRegistry = new ServiceRegistry();
 
         beanNames.stream()
                  .map(name -> this.beanFactory.getBean(name))
                  .collect(Collectors.toMap(this::getInterface, b -> b))
-                 .forEach(registry::addService);
+                 .forEach(serviceRegistry::addService);
 
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(Server.class);
 
         MutablePropertyValues properties = new MutablePropertyValues();
-        properties.add("serviceRegistry", registry);
+        properties.add("serviceRegistry", serviceRegistry);
         properties.add("port", serverProperties.getPort());
 
 
-        String address = Optional.ofNullable(serverProperties.getRegistry().getAddress())
+        String address = Optional.ofNullable(serverProperties.getRegister().getAddress())
                                  .orElse(inetUtils.findFirstNonLoopbackAddress().getHostAddress());
-        String name = Optional.ofNullable(serverProperties.getRegistry().getName())
+        String name = Optional.ofNullable(serverProperties.getRegister().getName())
                               .orElse(context.getApplicationName());
 
 
         properties.add("name", name);
         properties.add("address", address);
-        properties.add("metadata", serverProperties.getRegistry().getMetadata());
-        properties.add("registry", new ConsulRegistry("127.0.0.1", 8500));
+        properties.add("metadata", serverProperties.getRegister().getMetadata());
+        properties.add("registry", this.registry);
         beanDefinition.setPropertyValues(properties);
 
         beanDefinition.setInitMethodName("init");
