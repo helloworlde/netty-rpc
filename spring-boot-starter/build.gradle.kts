@@ -11,15 +11,18 @@ repositories {
 }
 
 val springVersion = "2.4.4"
-val springCloudVersion = "3.0.2"
+val springCloudDependenciesVersion = "2020.0.2"
 
 dependencies {
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudDependenciesVersion}"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:${springVersion}"))
+
     implementation(project(":core"))
     implementation(project(":server"))
     implementation(project(":client"))
 
-    implementation("org.springframework.boot:spring-boot-autoconfigure:${springVersion}")
-    implementation("org.springframework.cloud:spring-cloud-commons:${springCloudVersion}")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework.cloud:spring-cloud-commons")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springVersion}")
 }
 
