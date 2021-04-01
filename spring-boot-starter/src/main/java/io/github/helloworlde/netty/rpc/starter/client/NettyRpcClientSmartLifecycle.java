@@ -29,7 +29,7 @@ public class NettyRpcClientSmartLifecycle implements SmartLifecycle {
             try {
                 client.start();
             } catch (Exception e) {
-                log.error("启动 Client: {} 失败", name);
+                log.error("启动 Client: {} 失败: {}", name, e.getMessage(), e);
             }
         });
     }

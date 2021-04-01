@@ -5,7 +5,6 @@ import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.registry.NoopRegistry;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.starter.annotation.ConditionalOnNettyRpcClientEnabled;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,8 +36,6 @@ public class NettyRpcClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(NameResolver.class)
-    @ConditionalOnBean(Registry.class)
-    @ConditionalOnProperty(value = "netty.rpc.client.registry.enabled", matchIfMissing = true)
     public NameResolver nameResolver(ClientProperties clientProperties) {
         return new FixedAddressNameResolver(clientProperties.getResolver().getAddresses());
     }
