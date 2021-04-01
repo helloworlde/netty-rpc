@@ -1,14 +1,14 @@
 package io.github.helloworlde.netty.rpc.starter.client;
 
+import io.github.helloworlde.netty.rpc.starter.annotation.ConditionalOnNettyRpcClientEnabled;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.ConditionalOnBlockingDiscoveryEnabled;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(ClientProperties.class)
-@ConditionalOnBlockingDiscoveryEnabled
+@ConditionalOnNettyRpcClientEnabled
 public class NettyRpcClientAutoConfiguration {
 
     @Bean

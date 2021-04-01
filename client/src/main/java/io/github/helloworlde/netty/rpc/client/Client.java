@@ -64,7 +64,7 @@ public class Client {
         return this;
     }
 
-    public Client start() throws Exception {
+    public void start() throws Exception {
         if (Objects.isNull(workerGroup)) {
             this.init();
         }
@@ -72,7 +72,6 @@ public class Client {
         log.info("Client starting...");
         this.nameResolver.setAuthority(this.authority);
         this.nameResolver.start();
-        return this;
     }
 
     public void shutdown() {
