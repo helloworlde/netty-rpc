@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 @Configuration
 @EnableConfigurationProperties(ClientProperties.class)
@@ -19,7 +20,8 @@ import org.springframework.context.annotation.Configuration;
 public class NettyRpcClientAutoConfiguration {
 
     @Bean
-    public NettyRpcClientFactory rpcClientFactory(Registry registry, NameResolver nameResolver) {
+    public NettyRpcClientFactory rpcClientFactory(@Nullable Registry registry,
+                                                  @Nullable NameResolver nameResolver) {
         return new NettyRpcClientFactory(registry, nameResolver);
     }
 
