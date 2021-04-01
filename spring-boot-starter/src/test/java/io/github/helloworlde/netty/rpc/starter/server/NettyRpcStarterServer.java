@@ -3,13 +3,10 @@ package io.github.helloworlde.netty.rpc.starter.server;
 import io.github.helloworlde.netty.rpc.registry.ConsulRegistry;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.starter.annotation.NettyRpcService;
+import io.github.helloworlde.netty.rpc.starter.common.TestService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-interface TestService {
-    String test(String message);
-}
 
 @SpringBootApplication
 public class NettyRpcStarterServer {
