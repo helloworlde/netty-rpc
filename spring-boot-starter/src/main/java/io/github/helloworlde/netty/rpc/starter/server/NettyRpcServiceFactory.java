@@ -10,22 +10,23 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.core.env.Environment;
+import org.springframework.cloud.commons.util.InetUtils;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NettyRpcServiceFactory implements BeanFactoryAware {
 
     private DefaultListableBeanFactory beanFactory;
 
-    private Environment environment;
+    private ServerProperties serverProperties;
+    private InetUtils inetUtils;
 
-    public NettyRpcServiceFactory(Environment environment) {
-        this.environment = environment;
+    public NettyRpcServiceFactory(InetUtils inetUtils, ServerProperties serverProperties) {
+        this.inetUtils = inetUtils;
+        this.serverProperties = serverProperties;
     }
 
     @Override
@@ -45,18 +46,19 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
                  .collect(Collectors.toMap(this::getInterface, b -> b))
                  .forEach(registry::addService);
 
-        Map<String, String> metadata = new HashMap<>();
-
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(Server.class);
 
+        String address = Optional.ofNullable(serverProperties.getAddress())
+                                 .orElse(inetUtils.findFirstNonLoopbackAddress().getHostAddress());
+
         MutablePropertyValues properties = new MutablePropertyValues();
-        properties.add("port", 9090);
         properties.add("serviceRegistry", registry);
-        properties.add("address", "172.30.78.154");
-        properties.add("name", environment.getProperty("spring.application.name"));
+        properties.add("name", serverProperties.getName());
+        properties.add("address", address);
+        properties.add("port", serverProperties.getPort());
+        properties.add("metadata", serverProperties.getMetadata());
         properties.add("registry", new ConsulRegistry("127.0.0.1", 8500));
-        properties.add("metadata", metadata);
         beanDefinition.setPropertyValues(properties);
 
         beanDefinition.setInitMethodName("init");

@@ -2,16 +2,18 @@ package io.github.helloworlde.netty.rpc.starter.server;
 
 import io.github.helloworlde.netty.rpc.starter.annotation.NettyRpcService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
+@EnableConfigurationProperties(ServerProperties.class)
 @Configuration
 public class NettyRpcServerAutoConfiguration {
 
     @Bean
-    public NettyRpcServiceFactory nettyRpcServiceFactory(Environment environment) {
-        return new NettyRpcServiceFactory(environment);
+    public NettyRpcServiceFactory nettyRpcServiceFactory(InetUtils inetUtils, ServerProperties properties) {
+        return new NettyRpcServiceFactory(inetUtils, properties);
     }
 
     @ConditionalOnBean(annotation = NettyRpcService.class, value = Object.class)

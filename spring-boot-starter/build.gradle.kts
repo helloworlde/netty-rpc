@@ -1,6 +1,7 @@
 plugins {
     `maven-publish`
 }
+
 apply(plugin = "maven-publish")
 
 base.archivesBaseName = "netty-rpc-spring-boot-starter"
@@ -9,7 +10,8 @@ base.archivesBaseName = "netty-rpc-spring-boot-starter"
 repositories {
 }
 
-val springVersion = "2.1.9.RELEASE"
+val springVersion = "2.4.4"
+val springCloudVersion = "3.0.2"
 
 dependencies {
     implementation(project(":core"))
@@ -17,7 +19,8 @@ dependencies {
     implementation(project(":client"))
 
     implementation("org.springframework.boot:spring-boot-autoconfigure:${springVersion}")
-    implementation("org.springframework.boot:spring-boot-configuration-processor:${springVersion}")
+    implementation("org.springframework.cloud:spring-cloud-commons:${springCloudVersion}")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springVersion}")
 }
 
 
