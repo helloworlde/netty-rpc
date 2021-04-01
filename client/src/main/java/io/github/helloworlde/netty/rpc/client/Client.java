@@ -4,6 +4,7 @@ import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.ClientChannelInitializer;
+import io.github.helloworlde.netty.rpc.client.transport.TransportFactory;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
@@ -56,8 +57,10 @@ public class Client {
                  .handler(new LoggingHandler(LogLevel.TRACE))
                  .handler(new ClientChannelInitializer(handler));
 
+        TransportFactory transportFactory = new TransportFactory(bootstrap);
+
         if (Objects.nonNull(this.loadBalancer)) {
-            this.loadBalancer.setBootstrap(bootstrap);
+            this.loadBalancer.setTransportFactory(transportFactory);
         }
 
         if (Objects.nonNull(this.nameResolver)) {
