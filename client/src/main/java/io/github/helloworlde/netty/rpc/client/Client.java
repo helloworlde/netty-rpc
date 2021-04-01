@@ -15,6 +15,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.rmi.registry.Registry;
 import java.util.Objects;
 
 @Data
@@ -26,6 +27,8 @@ public class Client {
     private LoadBalancer loadBalancer;
 
     private NameResolver nameResolver;
+
+    private Registry registry;
 
     private EventLoopGroup workerGroup;
 
