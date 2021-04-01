@@ -12,8 +12,7 @@ subprojects {
     group = "io.github.helloworlde"
     version = "0.0.1-SNAPSHOT"
 
-    var nettyVersion = "4.1.59.Final"
-    val slf4jVersion = "1.7.25"
+    val nettyVersion = "4.1.59.Final"
     val jacksonVersion = "2.12.2"
     val consulVersion = "1.5.1"
 
