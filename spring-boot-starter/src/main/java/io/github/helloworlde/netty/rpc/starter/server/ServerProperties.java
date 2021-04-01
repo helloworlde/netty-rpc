@@ -13,7 +13,7 @@ public class ServerProperties {
 
     private int port = 9090;
 
-    @Value("${spring.application.name}")
+    @Value("${spring.application.name:server}")
     private String name;
 
     private String address;

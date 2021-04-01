@@ -7,8 +7,10 @@ import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@EnableConfigurationProperties(ServerProperties.class)
+
 @Configuration
+@EnableConfigurationProperties(ServerProperties.class)
+@ConditionalOnBean(annotation = NettyRpcService.class, value = Object.class)
 public class NettyRpcServerAutoConfiguration {
 
     @Bean
@@ -16,7 +18,6 @@ public class NettyRpcServerAutoConfiguration {
         return new NettyRpcServiceFactory(inetUtils, properties);
     }
 
-    @ConditionalOnBean(annotation = NettyRpcService.class, value = Object.class)
     @Bean
     public NettyRpcServerSmartLifecycle nettyRpcLifecycle(NettyRpcServiceFactory factory) {
         return new NettyRpcServerSmartLifecycle(factory);
