@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.helloworlde.netty.rpc.starter.client.NettyRpcClientAutoConfiguration,\
-io.github.helloworlde.netty.rpc.starter.server.NettyRpcServerAutoConfiguration

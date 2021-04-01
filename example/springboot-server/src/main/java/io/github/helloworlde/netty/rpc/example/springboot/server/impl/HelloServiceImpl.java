@@ -1,7 +1,7 @@
 package io.github.helloworlde.netty.rpc.example.springboot.server.impl;
 
 import io.github.helloworlde.netty.rpc.example.service.HelloService;
-import io.github.helloworlde.netty.rpc.starter.annotation.NettyRpcService;
+import io.github.helloworlde.netty.rpc.starter.server.NettyRpcService;
 import lombok.extern.slf4j.Slf4j;
 
 @NettyRpcService

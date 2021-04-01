@@ -2,7 +2,7 @@ package io.github.helloworlde.netty.rpc.example.springboot.client.controller;
 
 
 import io.github.helloworlde.netty.rpc.example.service.HelloService;
-import io.github.helloworlde.netty.rpc.starter.annotation.NettyRpcClient;
+import io.github.helloworlde.netty.rpc.starter.client.NettyRpcClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
