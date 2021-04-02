@@ -23,6 +23,7 @@ repositories {
 
 dependencies {
     implementation(project(":example:sdk"))
+    implementation(project(":core"))
     implementation(project(":spring-boot-starter-server"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
