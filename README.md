@@ -2,101 +2,21 @@
 
 > 基于 Netty 手动实现一个 Java RPC 框架
 
+## 功能
+
+- Java 服务
+- SpringBoot Starter
+- 服务注册和服务发现
+- 可扩展负载均衡、服务注册、服务发现
+
 ## 快速使用
 
-### Spring Boot 
+- [Java](./doc/Java.md)
+- [SpringBoot](./doc/SpringBoot.md)
+- [注册中心](./doc/NameResolver.md)
+- [服务发现](./doc/Registry.md)
+- [负载均衡](./doc/LoadBalancer.md)
 
-#### 1. 引入依赖
-
-```kotlin
-val nettyRpcVersion = "0.0.1-SNAPSHOT"
-
-repositories {
-    maven {
-        setUrl("https://maven.pkg.github.com/helloworlde/netty-rpc")
-    }
-}
-
-dependencies {
-    // 客户端
-    implementation("io.github.helloworlde:netty-rpc-spring-boot-starter-client:${nettyRpcVersion}")
-    // 服务端
-    implementation("io.github.helloworlde:netty-rpc-spring-boot-starter-server:${nettyRpcVersion}")
-}
-```
-
-#### 2. 服务端
-
-- 实现服务
-
-```java
-@NettyRpcService
-@Slf4j
-public class HelloServiceImpl implements HelloService {
-    // ...
-}
-```
-
-#### 3. 客户端
-
-- 接口调用
-
-```java
-@RestController
-public class ExampleController {
-
-    @NettyRpcClient("netty-rpc-server")
-    private HelloService helloService;
-    
-    // ...
-}
-```
-
-### Java 
-
-#### 1. 引入依赖
-
-```groovy
-val nettyRpcVersion = "0.0.1-SNAPSHOT"
-
-repositories {
-    maven {
-        setUrl("https://maven.pkg.github.com/helloworlde/netty-rpc")
-    }
-}
-
-dependencies {
-    // 客户端
-    implementation("io.github.helloworlde:netty-rpc-client:${nettyRpcVersion}")
-    // 服务端
-    implementation("io.github.helloworlde:netty-rpc-server:${nettyRpcVersion}")
-}
-```
-
-#### 2. 服务端
-
-```java
-Server server = Server.server()
-                      .port(9096)
-                      .addService(HelloService.class, new HelloServiceImpl());
-
-server.start();
-server.awaitTermination();
-```
-
-#### 3. 客户端
-
-```java
-Client client = Client.client()
-                      .forAddress("127.0.0.1", 9096)
-                      .start();
-
-HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
-
-String response = helloService.sayHello("Netty RPC");
-
-client.shutdown();
-```
 
 ## 协议
 
