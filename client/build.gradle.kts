@@ -6,7 +6,7 @@ apply(plugin = "maven-publish")
 base.archivesBaseName = "netty-rpc-client"
 
 dependencies {
-    implementation(project(":core"))
+    compile(project(":core"))
 }
 
 

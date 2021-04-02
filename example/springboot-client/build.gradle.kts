@@ -23,7 +23,6 @@ repositories {
 
 dependencies {
     implementation(project(":example:sdk"))
-    implementation(project(":client"))
     implementation(project(":spring-boot-starter-client"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
