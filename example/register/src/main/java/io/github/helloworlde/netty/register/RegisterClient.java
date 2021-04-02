@@ -2,6 +2,7 @@ package io.github.helloworlde.netty.register;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ClientBuilder;
+import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.ConsulNameResolver;
 import io.github.helloworlde.netty.rpc.client.proxy.ServiceProxy;
 import io.github.helloworlde.netty.rpc.example.service.HelloService;
@@ -14,6 +15,7 @@ public class RegisterClient {
         Client client = ClientBuilder.builder()
                                      .forTarget("netty-rpc-server")
                                      .nameResolver(new ConsulNameResolver("127.0.0.1", 8500))
+                                     .loadBalancer(new RoundRobinLoadBalancer())
                                      .build();
 
         client.start();

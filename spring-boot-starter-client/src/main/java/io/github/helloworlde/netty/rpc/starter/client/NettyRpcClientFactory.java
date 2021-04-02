@@ -1,6 +1,7 @@
 package io.github.helloworlde.netty.rpc.starter.client;
 
 import io.github.helloworlde.netty.rpc.client.Client;
+import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.registry.Registry;
@@ -21,9 +22,14 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
 
     private final Registry registry;
 
-    public NettyRpcClientFactory(Registry registry, NameResolver nameResolver) {
+    private final LoadBalancer loadBalancer;
+
+    public NettyRpcClientFactory(Registry registry,
+                                 NameResolver nameResolver,
+                                 LoadBalancer loadBalancer) {
         this.registry = registry;
         this.nameResolver = nameResolver;
+        this.loadBalancer = loadBalancer;
     }
 
     @Override
@@ -51,7 +57,7 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
         properties.add("authority", name);
         properties.add("nameResolver", this.nameResolver);
         properties.add("registry", this.registry);
-        properties.add("loadBalancer", new RoundRobinLoadBalancer());
+        properties.add("loadBalancer", loadBalancer);
 
         beanDefinition.setPropertyValues(properties);
 
