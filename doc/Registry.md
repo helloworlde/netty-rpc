@@ -20,9 +20,12 @@ public ConsulRegistry consulRegistry() {
 指定 `ConsulRegistry`
 
 ```java
-Client client = ClientBuilder.builder()
-                             .forTarget("netty-rpc-server")
-                             .nameResolver(new ConsulNameResolver("127.0.0.1", 8500))
+Server server = ServerBuilder.builder()
+                             .port(9096)
+                             .registry(new ConsulRegistry("127.0.0.1", 8500))
+                             .address("172.30.78.154")
+                             .addMetadata("version", "0.1")
+                             .name("netty-rpc-server")
                              .build();
 ```
 

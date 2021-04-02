@@ -21,8 +21,8 @@ public ConsulNameResolver consulNameResolver() {
 
 ```java
 Server server = ServerBuilder.builder()
-        .registry(new ConsulRegistry("127.0.0.1", 8500))
-        .build();
+                             .registry(new ConsulRegistry("127.0.0.1", 8500))
+                             .build();
 ```
 
 ### 自定义

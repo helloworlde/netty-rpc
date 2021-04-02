@@ -13,8 +13,8 @@
 
 - [Java](./doc/Java.md)
 - [SpringBoot](./doc/SpringBoot.md)
-- [注册中心](./doc/NameResolver.md)
-- [服务发现](./doc/Registry.md)
+- [服务发现](./doc/NameResolver.md)
+- [注册中心](./doc/Registry.md)
 - [负载均衡](./doc/LoadBalancer.md)
 
 
