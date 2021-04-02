@@ -4,7 +4,57 @@
 
 ## 快速使用
 
-1. 引入依赖
+### Spring Boot 
+
+#### 1. 引入依赖
+
+```kotlin
+val nettyRpcVersion = "0.0.1-SNAPSHOT"
+
+repositories {
+    maven {
+        setUrl("https://maven.pkg.github.com/helloworlde/netty-rpc")
+    }
+}
+
+dependencies {
+    // 客户端
+    implementation("io.github.helloworlde:netty-rpc-spring-boot-starter-client:${nettyRpcVersion}")
+    // 服务端
+    implementation("io.github.helloworlde:netty-rpc-spring-boot-starter-server:${nettyRpcVersion}")
+}
+```
+
+#### 2. 服务端
+
+- 实现服务
+
+```java
+@NettyRpcService
+@Slf4j
+public class HelloServiceImpl implements HelloService {
+    // ...
+}
+```
+
+#### 3. 客户端
+
+- 接口调用
+
+```java
+@RestController
+public class ExampleController {
+
+    @NettyRpcClient("netty-rpc-server")
+    private HelloService helloService;
+    
+    // ...
+}
+```
+
+### Java 
+
+#### 1. 引入依赖
 
 ```groovy
 val nettyRpcVersion = "0.0.1-SNAPSHOT"
@@ -16,30 +66,14 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.helloworlde:netty-rpc-core:${nettyRpcVersion}")
+    // 客户端
     implementation("io.github.helloworlde:netty-rpc-client:${nettyRpcVersion}")
+    // 服务端
     implementation("io.github.helloworlde:netty-rpc-server:${nettyRpcVersion}")
 }
 ```
 
-2. 定义并实现服务
-
-```java
-public interface HelloService {
-    String sayHello(String message);
-}
-
-@Slf4j
-public class HelloServiceImpl implements HelloService {
-
-    @Override
-    public String sayHello(String message) {
-        return "Hello " + message;
-    }
-}
-```
-
-3. 启动服务端
+#### 2. 服务端
 
 ```java
 Server server = Server.server()
@@ -50,7 +84,7 @@ server.start();
 server.awaitTermination();
 ```
 
-4. 启动客户端
+#### 3. 客户端
 
 ```java
 Client client = Client.client()
@@ -60,7 +94,6 @@ Client client = Client.client()
 HelloService helloService = new ServiceProxy<HelloService>(client).newProxy(HelloService.class);
 
 String response = helloService.sayHello("Netty RPC");
-log.info("返回的响应结果: {}", response);
 
 client.shutdown();
 ```
