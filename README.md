@@ -7,13 +7,13 @@
 - Java 服务
 - SpringBoot Starter
 - 服务注册和服务发现
-- 可扩展负载均衡、服务注册、服务发现
+- 可扩展负载均衡、服务注册、命名解析
 
 ## 快速使用
 
 - [Java](./doc/Java.md)
 - [SpringBoot](./doc/SpringBoot.md)
-- [服务发现](./doc/NameResolver.md)
+- [命名解析](./doc/NameResolver.md)
 - [注册中心](./doc/Registry.md)
 - [负载均衡](./doc/LoadBalancer.md)
 
