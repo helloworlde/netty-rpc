@@ -2,24 +2,19 @@ package io.github.helloworlde.netty.rpc.client.proxy;
 
 import io.github.helloworlde.netty.rpc.client.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.client.interceptor.ClientCall;
+import io.github.helloworlde.netty.rpc.client.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.client.request.RequestInvoker;
 import io.github.helloworlde.netty.rpc.client.request.ResponseFuture;
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ServiceProxyClientCall extends ClientCall {
+public class RequestInterceptor implements ClientInterceptor {
 
     private final RequestInvoker invoker;
 
-    public ServiceProxyClientCall(RequestInvoker invoker) {
-        super(null, null);
+    public RequestInterceptor(RequestInvoker invoker) {
         this.invoker = invoker;
-    }
-
-    @Override
-    public ClientCall newCall(Request request, CallOptions callOptions) throws Exception {
-        return this;
     }
 
     public Object sendRequest(Request request, CallOptions callOptions) throws Exception {
@@ -31,4 +26,15 @@ public class ServiceProxyClientCall extends ClientCall {
 
         return invoker.waitResponse(responseFuture, callOptions.getTimeout());
     }
+
+    @Override
+    public Object interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
+        return sendRequest(request, callOptions);
+    }
+
+    @Override
+    public Integer getOrder() {
+        return Integer.MIN_VALUE;
+    }
+
 }

@@ -9,10 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClientInterceptorTwo implements ClientInterceptor {
     @Override
-    public ClientCall interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
+    public Object interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
         log.info("ClientInterceptorTwo Executed");
         callOptions.withTimeout(1000L);
-        return next.newCall(request, callOptions);
+        return next.call(request, callOptions);
     }
 
     @Override
