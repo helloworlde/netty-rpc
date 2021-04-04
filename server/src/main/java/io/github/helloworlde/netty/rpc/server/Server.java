@@ -40,6 +40,9 @@ public class Server {
 
     List<ServerInterceptor> interceptors;
 
+    public Server() {
+    }
+
     public Server(String name,
                   int port,
                   String address,
