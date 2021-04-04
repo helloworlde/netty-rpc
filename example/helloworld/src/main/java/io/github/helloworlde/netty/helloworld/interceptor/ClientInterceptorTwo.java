@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientInterceptorTwo implements ClientInterceptor {
     @Override
     public Object interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
-        log.info("ClientInterceptorTwo Executed");
+        log.info("执行客户端拦截器 Two");
         callOptions.withTimeout(1000L);
         return next.call(request, callOptions);
     }
 
     @Override
     public Integer getOrder() {
-        return -1;
+        return 2;
     }
 }

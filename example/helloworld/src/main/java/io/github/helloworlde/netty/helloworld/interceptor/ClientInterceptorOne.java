@@ -11,12 +11,12 @@ public class ClientInterceptorOne implements ClientInterceptor {
 
     @Override
     public Object interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
-        log.info("ClientInterceptorOne Executed");
+        log.info("执行客户端拦截器 One");
         return next.call(request, callOptions);
     }
 
     @Override
     public Integer getOrder() {
-        return 0;
+        return 1;
     }
 }
