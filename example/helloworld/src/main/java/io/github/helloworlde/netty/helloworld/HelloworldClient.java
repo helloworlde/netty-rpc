@@ -3,6 +3,7 @@ package io.github.helloworlde.netty.helloworld;
 import io.github.helloworlde.netty.helloworld.interceptor.ClientInterceptorOne;
 import io.github.helloworlde.netty.helloworld.interceptor.ClientInterceptorTwo;
 import io.github.helloworlde.netty.opentelemetry.ClientTraceInterceptor;
+import io.github.helloworlde.netty.opentelemetry.ExporterEnum;
 import io.github.helloworlde.netty.opentelemetry.OpenTelemetryConfig;
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ClientBuilder;
@@ -16,7 +17,8 @@ public class HelloworldClient {
 
     public static void main(String[] args) throws Exception {
 
-        OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry("客户端", "127.0.0.1", 14250);
+        // OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterEnum.Jaeger, "客户端", "127.0.0.1", 14250);
+        OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterEnum.Zipkin, "客户端", "127.0.0.1", 9411);
 
         Client client = ClientBuilder.builder()
                                      .forAddress("127.0.0.1", 9096)
