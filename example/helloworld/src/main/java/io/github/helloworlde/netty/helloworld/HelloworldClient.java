@@ -1,5 +1,7 @@
 package io.github.helloworlde.netty.helloworld;
 
+import io.github.helloworlde.netty.helloworld.interceptor.ClientInterceptorOne;
+import io.github.helloworlde.netty.helloworld.interceptor.ClientInterceptorTwo;
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ClientBuilder;
 import io.github.helloworlde.netty.rpc.client.proxy.ServiceProxy;
@@ -12,6 +14,8 @@ public class HelloworldClient {
     public static void main(String[] args) throws Exception {
         Client client = ClientBuilder.builder()
                                      .forAddress("127.0.0.1", 9096)
+                                     .addInterceptor(new ClientInterceptorOne())
+                                     .addInterceptor(new ClientInterceptorTwo())
                                      .build();
 
         client.start();
