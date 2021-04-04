@@ -1,6 +1,7 @@
 package io.github.helloworlde.netty.rpc.client;
 
 import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
+import io.github.helloworlde.netty.rpc.client.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.ClientChannelInitializer;
@@ -17,6 +18,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -33,15 +35,19 @@ public class Client {
 
     private EventLoopGroup workerGroup;
 
+    private List<ClientInterceptor> interceptors;
+
     public Client() {
     }
 
     public Client(String authority,
                   NameResolver nameResolver,
-                  LoadBalancer loadBalancer) {
+                  LoadBalancer loadBalancer,
+                  List<ClientInterceptor> interceptors) {
         this.authority = authority;
         this.nameResolver = nameResolver;
         this.loadBalancer = loadBalancer;
+        this.interceptors = interceptors;
     }
 
     public Client init() {

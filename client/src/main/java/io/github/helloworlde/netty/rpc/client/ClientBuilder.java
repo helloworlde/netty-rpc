@@ -1,5 +1,6 @@
 package io.github.helloworlde.netty.rpc.client;
 
+import io.github.helloworlde.netty.rpc.client.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.FixedAddressNameResolver;
@@ -11,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -26,6 +29,8 @@ public class ClientBuilder {
     private LoadBalancer loadBalancer;
 
     private Registry registry;
+
+    private List<ClientInterceptor> interceptors = new ArrayList<>();
 
     public static ClientBuilder builder() {
         return new ClientBuilder();
@@ -56,6 +61,11 @@ public class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder addInterceptor(ClientInterceptor interceptor) {
+        this.interceptors.add(interceptor);
+        return this;
+    }
+
     public Client build() {
         if (Objects.isNull(this.loadBalancer)) {
             this.loadBalancer = new RoundRobinLoadBalancer();
@@ -69,6 +79,6 @@ public class ClientBuilder {
             this.nameResolver = new FixedAddressNameResolver(serverAddress);
         }
 
-        return new Client(authority, nameResolver, loadBalancer);
+        return new Client(authority, nameResolver, loadBalancer, interceptors);
     }
 }

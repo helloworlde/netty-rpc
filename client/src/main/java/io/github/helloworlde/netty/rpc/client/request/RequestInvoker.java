@@ -1,10 +1,12 @@
 package io.github.helloworlde.netty.rpc.client.request;
 
+import io.github.helloworlde.netty.rpc.client.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -31,7 +33,7 @@ public class RequestInvoker {
         return requestSeq.getAndIncrement();
     }
 
-    public Object sendRequest(Class<?> serviceClass, String methodName, Object[] args) throws Exception {
+    public void sendRequest(Request request, CallOptions callOptions, ResponseFuture<Object> responseFuture) throws Exception {
         Transport transport = loadBalancer.choose();
 
         while (!transport.isActive()) {
@@ -41,14 +43,15 @@ public class RequestInvoker {
             transport = loadBalancer.choose();
         }
 
-        Request request = createRequest(serviceClass, methodName, args);
-        ResponseFuture<Object> responseFuture = new ResponseFuture<>();
         transport.write(request, responseFuture);
-        return waitResponse(responseFuture);
     }
 
-    private Object waitResponse(ResponseFuture<Object> future) throws Exception {
-        return future.get();
+    public Object waitResponse(ResponseFuture<Object> future, Long timeout) throws Exception {
+        if (timeout <= 0) {
+            return future.get();
+        } else {
+            return future.get(timeout, TimeUnit.MILLISECONDS);
+        }
     }
 
 }
