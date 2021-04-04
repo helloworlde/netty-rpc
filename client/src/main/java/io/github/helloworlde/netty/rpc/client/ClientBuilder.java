@@ -1,10 +1,10 @@
 package io.github.helloworlde.netty.rpc.client;
 
-import io.github.helloworlde.netty.rpc.client.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.FixedAddressNameResolver;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
+import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.registry.NoopRegistry;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import lombok.Data;

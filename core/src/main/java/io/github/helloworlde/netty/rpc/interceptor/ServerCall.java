@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.rpc.server.interceptor;
+package io.github.helloworlde.netty.rpc.interceptor;
 
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;

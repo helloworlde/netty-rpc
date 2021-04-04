@@ -1,8 +1,8 @@
 package io.github.helloworlde.netty.rpc.client.request;
 
-import io.github.helloworlde.netty.rpc.client.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
+import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;
 

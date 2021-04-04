@@ -1,10 +1,10 @@
 package io.github.helloworlde.netty.rpc.client.proxy;
 
 import io.github.helloworlde.netty.rpc.client.Client;
-import io.github.helloworlde.netty.rpc.client.interceptor.CallOptions;
-import io.github.helloworlde.netty.rpc.client.interceptor.ClientCall;
-import io.github.helloworlde.netty.rpc.client.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.client.request.RequestInvoker;
+import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
+import io.github.helloworlde.netty.rpc.interceptor.ClientCall;
+import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;
 

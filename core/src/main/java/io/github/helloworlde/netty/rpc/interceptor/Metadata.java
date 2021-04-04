@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.rpc.server.interceptor;
+package io.github.helloworlde.netty.rpc.interceptor;
 
 import java.util.HashMap;
 import java.util.Map;

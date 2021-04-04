@@ -1,9 +1,9 @@
 package io.github.helloworlde.netty.rpc.server;
 
+import io.github.helloworlde.netty.rpc.interceptor.ServerInterceptor;
 import io.github.helloworlde.netty.rpc.registry.NoopRegistry;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
-import io.github.helloworlde.netty.rpc.server.interceptor.ServerInterceptor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
