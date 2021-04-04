@@ -20,6 +20,7 @@ repositories {
 dependencies {
     implementation(project(":client"))
     implementation(project(":server"))
+    implementation(project(":opentelemetry"))
 
     implementation(project(":example:sdk"))
 //
