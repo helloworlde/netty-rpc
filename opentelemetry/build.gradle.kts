@@ -8,10 +8,19 @@ base.archivesBaseName = "netty-rpc-opentelemetry"
 val opentelemetryVersion = "1.0.1"
 
 dependencies {
-    implementation(platform("io.opentelemetry:opentelemetry-bom:${opentelemetryVersion}"))
+    compile(project(":core"))
+
+    compile(platform("io.opentelemetry:opentelemetry-bom:${opentelemetryVersion}"))
+
     compile("io.opentelemetry:opentelemetry-api")
-    implementation("io.opentelemetry:opentelemetry-sdk")
-    implementation("io.opentelemetry:opentelemetry-exporter-jaeger")
+    compile("io.opentelemetry:opentelemetry-sdk")
+    compile("io.opentelemetry:opentelemetry-exporter-logging")
+
+    compile("io.opentelemetry:opentelemetry-exporter-zipkin")
+    compile("io.opentelemetry:opentelemetry-exporter-jaeger")
+    compile("io.opentelemetry:opentelemetry-semconv:1.0.1-alpha")
+
+    compile("io.grpc:grpc-netty:1.36.1")
 }
 
 

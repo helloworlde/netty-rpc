@@ -18,6 +18,10 @@ public class Metadata {
         return attributes.get(name);
     }
 
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
     public Metadata withDeadline(Long deadline) {
         this.deadline = deadline;
         return this;
