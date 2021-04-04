@@ -3,43 +3,42 @@ package io.github.helloworlde.netty.rpc.server.handler;
 import io.github.helloworlde.netty.rpc.error.RpcException;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
-import io.github.helloworlde.netty.rpc.model.ServiceDefinition;
+import io.github.helloworlde.netty.rpc.server.interceptor.Metadata;
+import io.github.helloworlde.netty.rpc.server.interceptor.ServerCall;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Method;
-import java.util.Optional;
+import java.net.SocketAddress;
+import java.util.Map;
 
 @Slf4j
 public class RequestProcessor {
 
-    private final ServiceRegistry serviceRegistry;
+    private final ServerCall serverCall;
 
-    public RequestProcessor(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+    public RequestProcessor(ServerCall serverCall) {
+        this.serverCall = serverCall;
     }
 
     public void process(Channel channel, Request request) {
         log.info("开始处理请求: {}", request);
+
         Response response = Response.builder()
                                     .requestId(request.getRequestId())
                                     .build();
+
         try {
-            String serviceName = Optional.ofNullable(request.getServiceName())
-                                         .orElseThrow(() -> new RpcException("ServiceName not present"));
-            String methodName = Optional.ofNullable(request.getMethodName())
-                                        .orElseThrow(() -> new RpcException("MethodName not present"));
+            // Metadata
+            SocketAddress remoteAddress = channel.remoteAddress();
+            Metadata metadata = new Metadata();
 
-            // Service
-            ServiceDefinition<?> serviceDefinition = serviceRegistry.getService(serviceName);
+            Map<String, Object> extra = request.getExtra();
+            extra.forEach(metadata::withAttribute);
+            metadata.withAttribute("remoteAddress", remoteAddress);
+            metadata.withAttribute("requestId", request.getRequestId());
 
-            Method method = Optional.ofNullable(serviceDefinition.getMethods().get(methodName))
-                                    .orElseThrow(() -> new RpcException("Method Not Found"));
-
-            Object[] params = request.getParams();
-            Object responseBody = doInvoke(method, serviceDefinition.getInstance(), params);
-            log.info("方法返回结果: {}", responseBody);
-
+            // 调用
+            Object responseBody = serverCall.call(request, metadata);
             response.setBody(responseBody);
         } catch (RpcException e) {
             log.error("Handler request failed: {}", e.getMessage(), e);
@@ -52,10 +51,4 @@ public class RequestProcessor {
                    .addListener(f -> log.info("发送响应完成"));
         }
     }
-
-    private Object doInvoke(Method method, Object instance, Object[] params) throws Exception {
-        log.info("开始调用方法: {}#{}", instance.getClass().getName(), method.getName());
-        return method.invoke(instance, params);
-    }
-
 }

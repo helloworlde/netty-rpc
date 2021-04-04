@@ -3,11 +3,14 @@ package io.github.helloworlde.netty.rpc.server;
 import io.github.helloworlde.netty.rpc.registry.NoopRegistry;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
+import io.github.helloworlde.netty.rpc.server.interceptor.ServerInterceptor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,6 +29,8 @@ public class ServerBuilder {
     private String name;
 
     private Registry registry;
+
+    private List<ServerInterceptor> interceptors = new ArrayList<>();
 
     public ServerBuilder() {
     }
@@ -65,6 +70,10 @@ public class ServerBuilder {
         return this;
     }
 
+    public ServerBuilder addInterceptor(ServerInterceptor interceptor) {
+        interceptors.add(interceptor);
+        return this;
+    }
 
     public Server build() {
         if (Objects.isNull(address)) {
@@ -74,6 +83,6 @@ public class ServerBuilder {
             registry = new NoopRegistry();
         }
 
-        return new Server(name, port, address, serviceRegistry, metadata, registry);
+        return new Server(name, port, address, serviceRegistry, metadata, registry, interceptors);
     }
 }

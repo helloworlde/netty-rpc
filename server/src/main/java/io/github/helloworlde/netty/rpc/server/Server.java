@@ -1,16 +1,22 @@
 package io.github.helloworlde.netty.rpc.server;
 
 import io.github.helloworlde.netty.rpc.registry.Registry;
+import io.github.helloworlde.netty.rpc.server.handler.HandlerInterceptor;
 import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
+import io.github.helloworlde.netty.rpc.server.interceptor.ServerCall;
+import io.github.helloworlde.netty.rpc.server.interceptor.ServerInterceptor;
 import io.github.helloworlde.netty.rpc.server.transport.Transport;
 import io.github.helloworlde.netty.rpc.service.HeartbeatService;
 import io.github.helloworlde.netty.rpc.service.impl.HeartbeatImpl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -32,29 +38,43 @@ public class Server {
 
     private Transport transport;
 
-    public Server() {
-    }
+    List<ServerInterceptor> interceptors;
 
     public Server(String name,
                   int port,
                   String address,
                   ServiceRegistry serviceRegistry,
                   Map<String, String> metadata,
-                  Registry registry) {
+                  Registry registry,
+                  List<ServerInterceptor> interceptors) {
         this.name = name;
         this.port = port;
         this.address = address;
         this.serviceRegistry = serviceRegistry;
         this.metadata = metadata;
         this.registry = registry;
+        this.interceptors = interceptors;
     }
 
     public void init() {
         transport = new Transport();
         serviceRegistry.addService(HeartbeatService.class, new HeartbeatImpl());
 
-        RequestProcessor requestProcessor = new RequestProcessor(serviceRegistry);
+        HandlerInterceptor handlerInterceptor = new HandlerInterceptor(serviceRegistry);
 
+        ServerCall serverCall = new ServerCall(handlerInterceptor);
+
+        if (Objects.nonNull(this.interceptors)) {
+            interceptors = this.interceptors.stream()
+                                            .sorted(Comparator.comparing(ServerInterceptor::getOrder))
+                                            .collect(Collectors.toList());
+
+            for (ServerInterceptor interceptor : interceptors) {
+                serverCall = new ServerCall(serverCall, interceptor);
+            }
+        }
+
+        RequestProcessor requestProcessor = new RequestProcessor(serverCall);
         transport.doInit(requestProcessor);
     }
 
