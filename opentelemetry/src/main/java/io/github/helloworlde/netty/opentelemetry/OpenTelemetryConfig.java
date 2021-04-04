@@ -4,8 +4,22 @@ import io.opentelemetry.api.OpenTelemetry;
 
 public class OpenTelemetryConfig {
 
-    public static OpenTelemetry getOpenTelemetry(String serviceName, String host, Integer port) {
-        return JaegerConfiguration.initOpenTelemetry(serviceName, host, port);
+    public static OpenTelemetry getOpenTelemetry(ExporterEnum exporter,
+                                                 String serviceName,
+                                                 String host,
+                                                 Integer port) {
+        OpenTelemetry openTelemetry;
+        switch (exporter) {
+            case Jaeger:
+                openTelemetry = JaegerConfiguration.initOpenTelemetry(serviceName, host, port);
+                break;
+            case Zipkin:
+                openTelemetry = ZipkinConfiguration.initOpenTelemetry(serviceName, host, port);
+                break;
+            default:
+                openTelemetry = LoggingConfiguration.initOpenTelemetry(serviceName);
+        }
+        return openTelemetry;
     }
 
 }
