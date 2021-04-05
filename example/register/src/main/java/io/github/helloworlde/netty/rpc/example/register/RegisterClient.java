@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.register;
+package io.github.helloworlde.netty.rpc.example.register;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ClientBuilder;
