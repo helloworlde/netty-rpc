@@ -1,5 +1,6 @@
 package io.github.helloworlde.netty.rpc.starter.server;
 
+import io.github.helloworlde.netty.rpc.interceptor.ServerInterceptor;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import io.github.helloworlde.netty.rpc.server.Server;
 import io.github.helloworlde.netty.rpc.server.handler.ServiceRegistry;
@@ -15,6 +16,7 @@ import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,14 +32,20 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
 
     private final InetUtils inetUtils;
 
+    private List<ServerInterceptor> interceptors;
+
     public NettyRpcServiceFactory(ApplicationContext context,
                                   InetUtils inetUtils,
                                   @Nullable Registry registry,
-                                  ServerProperties serverProperties) {
+                                  ServerProperties serverProperties,
+                                  ServerInterceptor[] interceptors) {
         this.context = context;
         this.inetUtils = inetUtils;
         this.registry = registry;
         this.serverProperties = serverProperties;
+        if (Objects.nonNull(interceptors)) {
+            this.interceptors = Arrays.asList(interceptors);
+        }
     }
 
     @Override
@@ -75,6 +83,7 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
         properties.add("address", address);
         properties.add("metadata", serverProperties.getRegister().getMetadata());
         properties.add("registry", this.registry);
+        properties.add("interceptors", interceptors);
         beanDefinition.setPropertyValues(properties);
 
         beanDefinition.setInitMethodName("init");
