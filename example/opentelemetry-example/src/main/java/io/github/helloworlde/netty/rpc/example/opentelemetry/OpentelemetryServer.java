@@ -1,8 +1,8 @@
 package io.github.helloworlde.netty.rpc.example.opentelemetry;
 
-import io.github.helloworlde.netty.opentelemetry.ExporterEnum;
 import io.github.helloworlde.netty.opentelemetry.OpenTelemetryConfig;
-import io.github.helloworlde.netty.opentelemetry.ServerTraceInterceptor;
+import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterEnum;
+import io.github.helloworlde.netty.opentelemetry.trace.server.ServerTraceInterceptor;
 import io.github.helloworlde.netty.rpc.example.opentelemetry.service.impl.HelloServiceImpl;
 import io.github.helloworlde.netty.rpc.example.service.HelloService;
 import io.github.helloworlde.netty.rpc.server.Server;

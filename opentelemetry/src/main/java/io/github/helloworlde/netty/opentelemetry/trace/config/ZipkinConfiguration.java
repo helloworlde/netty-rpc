@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.opentelemetry;
+package io.github.helloworlde.netty.opentelemetry.trace.config;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;

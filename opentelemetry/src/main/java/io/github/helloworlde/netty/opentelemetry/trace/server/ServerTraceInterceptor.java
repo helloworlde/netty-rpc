@@ -1,8 +1,9 @@
-package io.github.helloworlde.netty.opentelemetry;
+package io.github.helloworlde.netty.opentelemetry.trace.server;
 
-import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
-import io.github.helloworlde.netty.rpc.interceptor.ClientCall;
-import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
+import io.github.helloworlde.netty.opentelemetry.trace.config.TracerTextMapGetter;
+import io.github.helloworlde.netty.rpc.interceptor.Metadata;
+import io.github.helloworlde.netty.rpc.interceptor.ServerCall;
+import io.github.helloworlde.netty.rpc.interceptor.ServerInterceptor;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -11,15 +12,15 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.context.propagation.TextMapGetter;
 import io.opentelemetry.context.propagation.TextMapPropagator;
-import io.opentelemetry.context.propagation.TextMapSetter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
 import java.util.Map;
 
 @Slf4j
-public class ClientTraceInterceptor implements ClientInterceptor {
+public class ServerTraceInterceptor implements ServerInterceptor {
+
 
     private OpenTelemetry openTelemetry;
 
@@ -27,49 +28,53 @@ public class ClientTraceInterceptor implements ClientInterceptor {
 
     private TextMapPropagator textFormat;
 
-    private final TextMapSetter<Map<String, Object>> setter;
+    private TextMapGetter<Map<String, Object>> getter;
 
-    public ClientTraceInterceptor(OpenTelemetry openTelemetry) {
+    public ServerTraceInterceptor(OpenTelemetry openTelemetry) {
         this.openTelemetry = openTelemetry;
         this.tracer = openTelemetry.getTracer("NETTY_RPC");
         this.textFormat = openTelemetry.getPropagators().getTextMapPropagator();
-        this.setter = new TracerTextMapSetter();
+        this.getter = new TracerTextMapGetter();
     }
 
     @Override
-    public Object interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
+    public Object interceptorCall(Request request, Metadata metadata, ServerCall next) throws Exception {
+
+        Context extractContext = textFormat.extract(Context.current(), request.getExtra(), getter);
+
         String spanName = String.format("%s#%s", request.getServiceName(), request.getMethodName());
         Span span = tracer.spanBuilder(spanName)
-                          .setNoParent()
-                          .setSpanKind(SpanKind.CLIENT)
                           .setAttribute("ServiceName", request.getServiceName())
                           .setAttribute("MethodName", request.getMethodName())
                           .setAttribute("RequestId", request.getRequestId())
-                          .setAttribute("Timeout", callOptions.getTimeout())
-                          .setStartTimestamp(Instant.now())
+                          .setParent(extractContext)
+                          .setSpanKind(SpanKind.SERVER)
                           .startSpan();
 
-        Object result;
+        span.addEvent("开始处理");
 
+        metadata.getAttributes()
+                .forEach((key, value) -> span.setAttribute(key, String.valueOf(value)));
 
+        Object result = null;
         try (Scope ignored = span.makeCurrent()) {
-            textFormat.inject(Context.current(), callOptions.getAttributes(), setter);
-            span.addEvent("开始调用");
-            result = next.call(request, callOptions);
-            span.addEvent("接收到结果");
+            result = next.call(request, metadata);
+            span.addEvent("处理结束");
         } catch (Exception e) {
-            span.addEvent("调用异常");
+            span.addEvent("处理异常");
             span.setStatus(StatusCode.ERROR);
             throw e;
         } finally {
-            log.info("客户端 TraceId: {}", span.getSpanContext().getTraceId());
+            log.info("服务端 TraceId: {}", span.getSpanContext().getTraceId());
             span.end();
         }
+
         return result;
     }
 
     @Override
     public Integer getOrder() {
-        return Integer.MIN_VALUE + 1;
+        return Integer.MAX_VALUE - 1;
     }
+
 }

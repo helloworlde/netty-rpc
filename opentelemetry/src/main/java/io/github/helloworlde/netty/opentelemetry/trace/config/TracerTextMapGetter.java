@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.opentelemetry;
+package io.github.helloworlde.netty.opentelemetry.trace.config;
 
 import io.opentelemetry.context.propagation.TextMapGetter;
 import lombok.extern.slf4j.Slf4j;

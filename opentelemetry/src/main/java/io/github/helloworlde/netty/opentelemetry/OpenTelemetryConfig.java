@@ -1,5 +1,9 @@
 package io.github.helloworlde.netty.opentelemetry;
 
+import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterEnum;
+import io.github.helloworlde.netty.opentelemetry.trace.config.JaegerConfiguration;
+import io.github.helloworlde.netty.opentelemetry.trace.config.LoggingConfiguration;
+import io.github.helloworlde.netty.opentelemetry.trace.config.ZipkinConfiguration;
 import io.opentelemetry.api.OpenTelemetry;
 
 public class OpenTelemetryConfig {
