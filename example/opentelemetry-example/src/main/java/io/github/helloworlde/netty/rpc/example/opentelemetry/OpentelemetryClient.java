@@ -36,8 +36,12 @@ public class OpentelemetryClient {
 
             HelloService helloService = new ServiceProxy(client).newProxy(HelloService.class);
 
-            String response = helloService.sayHello("Netty RPC");
-            log.info("返回的响应结果: {}", response);
+            for (int i = 0; i < 10; i++) {
+
+                String response = helloService.sayHello("Netty RPC " + i);
+                log.info("返回的响应结果: {}", response);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
