@@ -41,7 +41,6 @@ public class ClientTraceInterceptor implements ClientInterceptor {
     public Object interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
         String spanName = String.format("%s#%s", request.getServiceName(), request.getMethodName());
         Span span = tracer.spanBuilder(spanName)
-                          .setNoParent()
                           .setSpanKind(SpanKind.CLIENT)
                           .setAttribute("ServiceName", request.getServiceName())
                           .setAttribute("MethodName", request.getMethodName())
