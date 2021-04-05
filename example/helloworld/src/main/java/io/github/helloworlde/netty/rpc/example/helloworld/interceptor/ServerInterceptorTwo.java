@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.helloworld.interceptor;
+package io.github.helloworlde.netty.rpc.example.helloworld.interceptor;
 
 import io.github.helloworlde.netty.rpc.interceptor.Metadata;
 import io.github.helloworlde.netty.rpc.interceptor.ServerCall;
