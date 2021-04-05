@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public class RequestProcessor {
@@ -33,9 +34,11 @@ public class RequestProcessor {
             Metadata metadata = new Metadata();
 
             Map<String, Object> extra = request.getExtra();
-            extra.forEach(metadata::withAttribute);
-            metadata.withAttribute("remoteAddress", remoteAddress);
-            metadata.withAttribute("requestId", request.getRequestId());
+            if (Objects.nonNull(extra)) {
+                extra.forEach(metadata::withAttribute);
+                metadata.withAttribute("remoteAddress", remoteAddress);
+                metadata.withAttribute("requestId", request.getRequestId());
+            }
 
             // 调用
             Object responseBody = serverCall.call(request, metadata);
