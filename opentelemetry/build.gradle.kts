@@ -18,8 +18,12 @@ dependencies {
 
     compile("io.opentelemetry:opentelemetry-exporter-zipkin")
     compile("io.opentelemetry:opentelemetry-exporter-jaeger")
-    compile("io.opentelemetry:opentelemetry-semconv:1.0.1-alpha")
 
+    compile("io.opentelemetry:opentelemetry-semconv:1.0.1-alpha")
+    compile("io.opentelemetry:opentelemetry-exporter-prometheus:1.0.1-alpha")
+
+    compile("io.prometheus:simpleclient:0.8.1")
+    compile("io.prometheus:simpleclient_httpserver:0.8.1")
     compile("io.grpc:grpc-netty:1.36.1")
 }
 
