@@ -2,8 +2,8 @@ package io.github.helloworlde.netty.rpc.starter.client;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
-import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
+import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -12,6 +12,10 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class NettyRpcClientFactory implements BeanFactoryAware {
@@ -24,12 +28,18 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
 
     private final LoadBalancer loadBalancer;
 
+    private List<ClientInterceptor> interceptors;
+
     public NettyRpcClientFactory(Registry registry,
                                  NameResolver nameResolver,
-                                 LoadBalancer loadBalancer) {
+                                 LoadBalancer loadBalancer,
+                                 ClientInterceptor[] interceptors) {
         this.registry = registry;
         this.nameResolver = nameResolver;
         this.loadBalancer = loadBalancer;
+        if (Objects.nonNull(interceptors)) {
+            this.interceptors = Arrays.asList(interceptors);
+        }
     }
 
     @Override
@@ -58,6 +68,7 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
         properties.add("nameResolver", this.nameResolver);
         properties.add("registry", this.registry);
         properties.add("loadBalancer", loadBalancer);
+        properties.add("interceptors", interceptors);
 
         beanDefinition.setPropertyValues(properties);
 

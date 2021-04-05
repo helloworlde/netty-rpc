@@ -4,6 +4,7 @@ import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.FixedAddressNameResolver;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
+import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.registry.NoopRegistry;
 import io.github.helloworlde.netty.rpc.registry.Registry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -22,8 +23,10 @@ public class NettyRpcClientAutoConfiguration {
     @Bean
     public NettyRpcClientFactory rpcClientFactory(@Nullable Registry registry,
                                                   @Nullable NameResolver nameResolver,
-                                                  @Nullable LoadBalancer loadBalancer) {
-        return new NettyRpcClientFactory(registry, nameResolver, loadBalancer);
+                                                  @Nullable LoadBalancer loadBalancer,
+                                                  @Nullable ClientInterceptor[] interceptors) {
+
+        return new NettyRpcClientFactory(registry, nameResolver, loadBalancer, interceptors);
     }
 
     @Bean
