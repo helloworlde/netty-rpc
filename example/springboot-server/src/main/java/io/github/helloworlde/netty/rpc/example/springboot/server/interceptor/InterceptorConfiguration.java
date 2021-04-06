@@ -2,7 +2,7 @@ package io.github.helloworlde.netty.rpc.example.springboot.server.interceptor;
 
 import io.github.helloworlde.netty.opentelemetry.OpenTelemetryConfig;
 import io.github.helloworlde.netty.opentelemetry.metrics.ServerMetricsInterceptor;
-import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterEnum;
+import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterType;
 import io.github.helloworlde.netty.opentelemetry.trace.server.ServerTraceInterceptor;
 import io.opentelemetry.api.OpenTelemetry;
 import io.prometheus.client.CollectorRegistry;
@@ -17,7 +17,7 @@ public class InterceptorConfiguration {
     private String applicationName;
 
     @Value("${opentelemetry.exporter.name}")
-    private ExporterEnum exporter;
+    private ExporterType exporter;
 
     @Value("${opentelemetry.exporter.address}")
     private String exporterAddress;

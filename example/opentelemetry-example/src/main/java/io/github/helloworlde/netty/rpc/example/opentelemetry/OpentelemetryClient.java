@@ -2,7 +2,7 @@ package io.github.helloworlde.netty.rpc.example.opentelemetry;
 
 import io.github.helloworlde.netty.opentelemetry.OpenTelemetryConfig;
 import io.github.helloworlde.netty.opentelemetry.trace.client.ClientTraceInterceptor;
-import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterEnum;
+import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterType;
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ClientBuilder;
 import io.github.helloworlde.netty.rpc.client.proxy.ServiceProxy;
@@ -17,7 +17,7 @@ public class OpentelemetryClient {
 
     public static void main(String[] args) throws Exception {
 
-        OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterEnum.Jaeger, "客户端", "127.0.0.1", 14250);
+        OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterType.jaeger, "客户端", "127.0.0.1", 14250);
         // OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterEnum.Zipkin, "客户端", "127.0.0.1", 9411);
         final Span span = telemetry.getTracer("NETTY_RPC")
                                    .spanBuilder("ClientStart")

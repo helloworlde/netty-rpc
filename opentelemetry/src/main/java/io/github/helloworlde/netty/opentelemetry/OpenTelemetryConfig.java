@@ -1,6 +1,6 @@
 package io.github.helloworlde.netty.opentelemetry;
 
-import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterEnum;
+import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterType;
 import io.github.helloworlde.netty.opentelemetry.trace.config.JaegerConfiguration;
 import io.github.helloworlde.netty.opentelemetry.trace.config.LoggingConfiguration;
 import io.github.helloworlde.netty.opentelemetry.trace.config.ZipkinConfiguration;
@@ -8,22 +8,30 @@ import io.opentelemetry.api.OpenTelemetry;
 
 public class OpenTelemetryConfig {
 
-    public static OpenTelemetry getOpenTelemetry(ExporterEnum exporter,
+    public static OpenTelemetry getOpenTelemetry(ExporterType exporter,
                                                  String serviceName,
                                                  String host,
-                                                 Integer port) {
+                                                 Integer port,
+                                                 int sampleRatio) {
         OpenTelemetry openTelemetry;
         switch (exporter) {
-            case Jaeger:
-                openTelemetry = JaegerConfiguration.initOpenTelemetry(serviceName, host, port);
+            case jaeger:
+                openTelemetry = JaegerConfiguration.initOpenTelemetry(serviceName, host, port, sampleRatio);
                 break;
-            case Zipkin:
-                openTelemetry = ZipkinConfiguration.initOpenTelemetry(serviceName, host, port);
+            case zipkin:
+                openTelemetry = ZipkinConfiguration.initOpenTelemetry(serviceName, host, port, sampleRatio);
                 break;
             default:
                 openTelemetry = LoggingConfiguration.initOpenTelemetry(serviceName);
         }
         return openTelemetry;
+    }
+
+    public static OpenTelemetry getOpenTelemetry(ExporterType exporter,
+                                                 String serviceName,
+                                                 String host,
+                                                 Integer port) {
+        return getOpenTelemetry(exporter, serviceName, host, port, 1);
     }
 
 }

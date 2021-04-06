@@ -1,7 +1,7 @@
 package io.github.helloworlde.netty.rpc.example.opentelemetry;
 
 import io.github.helloworlde.netty.opentelemetry.OpenTelemetryConfig;
-import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterEnum;
+import io.github.helloworlde.netty.opentelemetry.trace.config.ExporterType;
 import io.github.helloworlde.netty.opentelemetry.trace.server.ServerTraceInterceptor;
 import io.github.helloworlde.netty.rpc.example.opentelemetry.service.impl.HelloServiceImpl;
 import io.github.helloworlde.netty.rpc.example.service.HelloService;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OpentelemetryServer {
 
     public static void main(String[] args) throws InterruptedException {
-        OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterEnum.Jaeger, "服务端", "127.0.0.1", 14250);
+        OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterType.jaeger, "服务端", "127.0.0.1", 14250);
         // OpenTelemetry telemetry = OpenTelemetryConfig.getOpenTelemetry(ExporterEnum.Zipkin, "服务端", "127.0.0.1", 9411);
 
         Server server = ServerBuilder.builder()
