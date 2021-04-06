@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class JaegerConfiguration {
 
-    public static OpenTelemetry initOpenTelemetry(String serviceName, String jaegerHost, int jaegerPort) {
+    public static OpenTelemetry initOpenTelemetry(String serviceName, String jaegerHost, Integer jaegerPort, int sampleRatio) {
         ManagedChannel jaegerChannel = ManagedChannelBuilder.forAddress(jaegerHost, jaegerPort).usePlaintext().build();
 
         JaegerGrpcSpanExporter jaegerExporter = JaegerGrpcSpanExporter.builder()
@@ -29,7 +29,7 @@ public class JaegerConfiguration {
         Resource serviceNameResource = Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, serviceName));
 
         SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
-                                                               .setSampler(Sampler.traceIdRatioBased(1))
+                                                               .setSampler(Sampler.traceIdRatioBased(sampleRatio))
                                                                .addSpanProcessor(BatchSpanProcessor.builder(jaegerExporter).build())
                                                                .setResource(Resource.getDefault().merge(serviceNameResource))
                                                                .build();
