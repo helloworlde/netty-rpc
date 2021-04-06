@@ -5,7 +5,8 @@ apply(plugin = "maven-publish")
 
 base.archivesBaseName = "netty-rpc-opentelemetry"
 
-val opentelemetryVersion = "1.0.1"
+//val opentelemetryVersion = "1.0.1"
+val opentelemetryVersion = "1.1.0-SNAPSHOT"
 
 dependencies {
     compile(project(":core"))

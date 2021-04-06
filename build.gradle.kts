@@ -20,6 +20,9 @@ subprojects {
         mavenLocal()
         mavenCentral()
         maven {
+            setUrl("https://oss.sonatype.org/content/repositories/snapshots")
+        }
+        maven {
             setUrl("https://maven.aliyun.com/repository/apache-snapshots")
         }
         maven {
