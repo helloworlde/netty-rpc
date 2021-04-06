@@ -7,7 +7,6 @@ import io.github.helloworlde.netty.opentelemetry.trace.client.ClientTraceInterce
 import io.github.helloworlde.netty.opentelemetry.trace.server.ServerTraceInterceptor;
 import io.opentelemetry.api.OpenTelemetry;
 import io.prometheus.client.CollectorRegistry;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,7 +36,6 @@ public class OpentelemetryAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(CollectorRegistry.class)
     @ConditionalOnProperty(value = "netty.rpc.client.enabled", matchIfMissing = true)
     public ClientMetricsInterceptor clientMetricsInterceptor(CollectorRegistry collectorRegistry) {
         return new ClientMetricsInterceptor(collectorRegistry);
@@ -50,7 +48,6 @@ public class OpentelemetryAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(CollectorRegistry.class)
     @ConditionalOnProperty(value = "netty.rpc.server.enabled", matchIfMissing = true)
     public ServerMetricsInterceptor serverMetricsInterceptor(CollectorRegistry collectorRegistry) {
         return new ServerMetricsInterceptor(collectorRegistry);
