@@ -24,7 +24,7 @@ repositories {
 dependencies {
     implementation(project(":example:sdk"))
     implementation(project(":spring-boot-starter-server"))
-    implementation(project(":opentelemetry"))
+    implementation(project(":spring-boot-starter-opentelemetry"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
