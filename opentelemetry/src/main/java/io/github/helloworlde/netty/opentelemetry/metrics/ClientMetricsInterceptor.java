@@ -46,24 +46,30 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
         Object result;
         try {
             result = next.call(request, callOptions);
-            recordRequestCount(serviceName, methodName, "success");
+            recordRequestCount(serviceName, methodName, "SUCCESS");
         } catch (Exception e) {
-            recordRequestCount(serviceName, methodName, "error");
+            recordRequestCount(serviceName, methodName, "ERROR");
             throw e;
         } finally {
-            recordRequestCount(serviceName, methodName, "sum");
-
             long costTime = Duration.between(startTime, Instant.now()).toMillis();
-            requestTimeRecorder.record(costTime);
+            recordRequestTime(serviceName, methodName, costTime);
         }
         return result;
     }
 
-    private void recordRequestCount(String serviceName, String methodName, String type) {
+    private void recordRequestTime(String serviceName, String methodName, long costTime) {
         Labels labels = Labels.builder()
                               .put("service_name", serviceName)
                               .put("method_name", methodName)
-                              .put("type", type)
+                              .build();
+        requestTimeRecorder.record(costTime, labels);
+    }
+
+    private void recordRequestCount(String serviceName, String methodName, String outcome) {
+        Labels labels = Labels.builder()
+                              .put("service_name", serviceName)
+                              .put("method_name", methodName)
+                              .put("outcome", outcome)
                               .build();
         requestCountCounter.add(1L, labels);
     }

@@ -17,22 +17,22 @@ import java.time.Instant;
 @Slf4j
 public class ServerMetricsInterceptor implements ServerInterceptor {
 
-    private final LongCounter requestCountCounter;
+    private final LongCounter responseCountCounter;
 
-    private final DoubleValueRecorder requestTimeRecorder;
+    private final DoubleValueRecorder responseTimeRecorder;
 
     public ServerMetricsInterceptor(CollectorRegistry collectorRegistry) {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration(collectorRegistry);
         Meter meter = metricsConfiguration.getMeter();
 
-        requestCountCounter = meter.longCounterBuilder("netty.rpc.response.count")
-                                   .setDescription("请求数量")
-                                   .build();
+        responseCountCounter = meter.longCounterBuilder("netty.rpc.response.count")
+                                    .setDescription("响应数量")
+                                    .build();
 
-        requestTimeRecorder = meter.doubleValueRecorderBuilder("netty.rpc.response.duration")
-                                   .setDescription("请求时间")
-                                   .setUnit("ms")
-                                   .build();
+        responseTimeRecorder = meter.doubleValueRecorderBuilder("netty.rpc.response.duration")
+                                    .setDescription("响应时间")
+                                    .setUnit("ms")
+                                    .build();
     }
 
     @Override
@@ -45,27 +45,33 @@ public class ServerMetricsInterceptor implements ServerInterceptor {
         Object result;
         try {
             result = next.call(request, metadata);
-            recordRequestCount(serviceName, methodName, "success");
+            recordResponseCount(serviceName, methodName, "SUCCESS");
         } catch (Exception e) {
-            recordRequestCount(serviceName, methodName, "error");
+            recordResponseCount(serviceName, methodName, "ERROR");
             throw e;
         } finally {
-            recordRequestCount(serviceName, methodName, "sum");
-
             long costTime = Duration.between(startTime, Instant.now()).toMillis();
-            requestTimeRecorder.record(costTime);
+            recordResponseTime(serviceName, methodName, costTime);
         }
         return result;
     }
 
 
-    private void recordRequestCount(String serviceName, String methodName, String type) {
+    private void recordResponseTime(String serviceName, String methodName, long costTime) {
         Labels labels = Labels.builder()
                               .put("service_name", serviceName)
                               .put("method_name", methodName)
-                              .put("type", type)
                               .build();
-        requestCountCounter.add(1L, labels);
+        responseTimeRecorder.record(costTime, labels);
+    }
+
+    private void recordResponseCount(String serviceName, String methodName, String outcome) {
+        Labels labels = Labels.builder()
+                              .put("service_name", serviceName)
+                              .put("method_name", methodName)
+                              .put("outcome", outcome)
+                              .build();
+        responseCountCounter.add(1L, labels);
     }
 
     @Override
