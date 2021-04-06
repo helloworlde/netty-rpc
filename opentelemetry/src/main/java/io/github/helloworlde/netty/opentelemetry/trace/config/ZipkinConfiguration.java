@@ -8,7 +8,8 @@ import io.opentelemetry.exporter.zipkin.ZipkinSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
 public class ZipkinConfiguration {
@@ -25,7 +26,8 @@ public class ZipkinConfiguration {
         Resource resource = Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, serviceName));
 
         SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
-                                                               .addSpanProcessor(SimpleSpanProcessor.create(zipkinSpanExporter))
+                                                               .setSampler(Sampler.traceIdRatioBased(1))
+                                                               .addSpanProcessor(BatchSpanProcessor.builder(zipkinSpanExporter).build())
                                                                .setResource(Resource.getDefault().merge(resource))
                                                                .build();
 

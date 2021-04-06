@@ -10,7 +10,8 @@ import io.opentelemetry.exporter.jaeger.JaegerGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,8 @@ public class JaegerConfiguration {
         Resource serviceNameResource = Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, serviceName));
 
         SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
-                                                               .addSpanProcessor(SimpleSpanProcessor.create(jaegerExporter))
+                                                               .setSampler(Sampler.traceIdRatioBased(1))
+                                                               .addSpanProcessor(BatchSpanProcessor.builder(jaegerExporter).build())
                                                                .setResource(Resource.getDefault().merge(serviceNameResource))
                                                                .build();
 
