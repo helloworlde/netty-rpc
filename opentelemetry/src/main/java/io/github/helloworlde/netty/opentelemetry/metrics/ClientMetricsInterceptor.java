@@ -15,12 +15,16 @@ import io.opentelemetry.sdk.metrics.common.InstrumentDescriptor;
 import io.opentelemetry.sdk.metrics.common.InstrumentType;
 import io.opentelemetry.sdk.metrics.common.InstrumentValueType;
 import io.opentelemetry.sdk.metrics.data.AggregationTemporality;
+import io.opentelemetry.sdk.metrics.data.DoubleHistogramData;
+import io.opentelemetry.sdk.metrics.data.DoubleHistogramPointData;
+import io.opentelemetry.sdk.metrics.data.MetricData;
 import io.opentelemetry.sdk.resources.Resource;
 import io.prometheus.client.CollectorRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -33,6 +37,10 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
     private final LongCounter requestCounterLong;
 
     private final AggregatorHandle<Object> requestTimeHandler;
+
+    private DoubleHistogramPointData doubleHistogram;
+    private MetricData timeHistogram;
+
 
     public ClientMetricsInterceptor(CollectorRegistry collectorRegistry) {
         this.collectorRegistry = collectorRegistry;
@@ -60,6 +68,27 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
                                                                                      InstrumentValueType.DOUBLE
                                                                              ));
 
+        DoubleHistogramPointData doubleHistogramPointData = DoubleHistogramPointData.create(
+                0,
+                100,
+                Labels.of("role", "client"),
+                100,
+                Arrays.asList(0.5d, 0.9d, 0.99d, 1d),
+                Arrays.asList(5L, 9L, 99L)
+        );
+
+        final DoubleHistogramData doubleHistogramData = DoubleHistogramData.create(AggregationTemporality.CUMULATIVE, Arrays.asList(doubleHistogramPointData));
+
+
+        timeHistogram = MetricData.createDoubleHistogram(
+                Resource.getDefault(),
+                InstrumentationLibraryInfo.empty(),
+                "netty.rpc.request.time",
+                "请求耗时",
+                "ms",
+                doubleHistogramData
+        );
+
 
         requestTimeHandler = objectAggregator.createHandle();
     }
@@ -81,6 +110,7 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
             throw e;
         } finally {
             long costTime = Duration.between(Instant.now(), startTime).toMillis();
+
             requestTimeHandler.recordLong(costTime);
         }
         return result;
