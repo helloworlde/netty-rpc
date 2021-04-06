@@ -21,12 +21,13 @@ import org.springframework.lang.Nullable;
 public class NettyRpcClientAutoConfiguration {
 
     @Bean
-    public NettyRpcClientFactory rpcClientFactory(@Nullable Registry registry,
+    public NettyRpcClientFactory rpcClientFactory(ClientProperties clientProperties,
+                                                  @Nullable Registry registry,
                                                   @Nullable NameResolver nameResolver,
                                                   @Nullable LoadBalancer loadBalancer,
                                                   @Nullable ClientInterceptor[] interceptors) {
 
-        return new NettyRpcClientFactory(registry, nameResolver, loadBalancer, interceptors);
+        return new NettyRpcClientFactory(clientProperties, registry, nameResolver, loadBalancer, interceptors);
     }
 
     @Bean

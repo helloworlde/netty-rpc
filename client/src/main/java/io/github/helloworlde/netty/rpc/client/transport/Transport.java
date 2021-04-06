@@ -25,9 +25,12 @@ public class Transport {
 
     private HeartbeatTask heartbeatTask;
 
-    public Transport(SocketAddress address, Bootstrap bootstrap) {
+    private boolean enableHeartbeat;
+
+    public Transport(SocketAddress address, Bootstrap bootstrap, boolean enableHeartbeat) {
         this.address = address;
         this.bootstrap = bootstrap;
+        this.enableHeartbeat = enableHeartbeat;
     }
 
     public void doConnect() throws Exception {
@@ -42,7 +45,9 @@ public class Transport {
 
         if (future.isSuccess()) {
             log.info("连接: {} 成功", this.address);
-            this.heartbeatTask = new HeartbeatTask(this);
+            if (enableHeartbeat) {
+                this.heartbeatTask = new HeartbeatTask(this);
+            }
             this.channel = future.channel();
             log.info("channel: {}", channel);
             this.handler = this.channel.pipeline().get(ClientHandler.class);
@@ -62,7 +67,9 @@ public class Transport {
     public void shutdown() {
         log.info("开始关闭连接: {}", this.address);
         this.channel.flush();
-        this.heartbeatTask.shutdown();
+        if (enableHeartbeat) {
+            this.heartbeatTask.shutdown();
+        }
         this.channel.disconnect();
     }
 

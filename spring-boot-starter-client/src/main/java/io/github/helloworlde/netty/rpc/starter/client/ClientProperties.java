@@ -15,6 +15,8 @@ public class ClientProperties {
 
     private boolean enabled = true;
 
+    private boolean enableHeartbeat = true;
+
     private Map<String, ClientConfig> config = new HashMap<>();
 
     @NestedConfigurationProperty

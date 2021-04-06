@@ -8,11 +8,14 @@ public class TransportFactory {
 
     private final Bootstrap bootstrap;
 
-    public TransportFactory(Bootstrap bootstrap) {
+    private final boolean enableHeartbeat;
+
+    public TransportFactory(Bootstrap bootstrap, boolean enableHeartbeat) {
         this.bootstrap = bootstrap;
+        this.enableHeartbeat = enableHeartbeat;
     }
 
     public Transport createTransport(SocketAddress address) {
-        return new Transport(address, bootstrap);
+        return new Transport(address, bootstrap, enableHeartbeat);
     }
 }

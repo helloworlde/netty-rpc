@@ -30,10 +30,14 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
 
     private List<ClientInterceptor> interceptors;
 
-    public NettyRpcClientFactory(Registry registry,
+    private ClientProperties clientProperties;
+
+    public NettyRpcClientFactory(ClientProperties clientProperties,
+                                 Registry registry,
                                  NameResolver nameResolver,
                                  LoadBalancer loadBalancer,
                                  ClientInterceptor[] interceptors) {
+        this.clientProperties = clientProperties;
         this.registry = registry;
         this.nameResolver = nameResolver;
         this.loadBalancer = loadBalancer;
@@ -69,6 +73,7 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
         properties.add("registry", this.registry);
         properties.add("loadBalancer", loadBalancer);
         properties.add("interceptors", interceptors);
+        properties.add("enableHeartbeat", clientProperties.isEnableHeartbeat());
 
         beanDefinition.setPropertyValues(properties);
 

@@ -37,6 +37,8 @@ public class Client {
 
     private List<ClientInterceptor> interceptors;
 
+    private boolean enableHeartbeat = true;
+
     public Client() {
     }
 
@@ -63,7 +65,7 @@ public class Client {
                  .handler(new LoggingHandler(LogLevel.TRACE))
                  .handler(new ClientChannelInitializer(handler));
 
-        TransportFactory transportFactory = new TransportFactory(bootstrap);
+        TransportFactory transportFactory = new TransportFactory(bootstrap, enableHeartbeat);
 
         if (Objects.nonNull(this.loadBalancer)) {
             this.loadBalancer.setTransportFactory(transportFactory);
