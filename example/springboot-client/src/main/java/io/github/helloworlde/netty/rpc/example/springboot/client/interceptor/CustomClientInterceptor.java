@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.rpc.example.springboot.client;
+package io.github.helloworlde.netty.rpc.example.springboot.client.interceptor;
 
 import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.interceptor.ClientCall;
