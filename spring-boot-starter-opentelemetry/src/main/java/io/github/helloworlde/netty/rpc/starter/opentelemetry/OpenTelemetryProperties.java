@@ -23,7 +23,7 @@ public class OpenTelemetryProperties {
     @Data
     static class Exporter {
 
-        private ExporterType name;
+        private ExporterType name = ExporterType.logging;
 
         private String address;
 
