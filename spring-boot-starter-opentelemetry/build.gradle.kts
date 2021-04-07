@@ -4,7 +4,7 @@ plugins {
 
 apply(plugin = "maven-publish")
 
-base.archivesBaseName = "netty-rpc-spring-boot-starter-server"
+base.archivesBaseName = "netty-rpc-spring-boot-starter-opentelemetry"
 
 
 repositories {
