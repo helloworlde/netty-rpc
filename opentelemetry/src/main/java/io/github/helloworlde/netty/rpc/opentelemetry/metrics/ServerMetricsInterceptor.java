@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.opentelemetry.metrics;
+package io.github.helloworlde.netty.rpc.opentelemetry.metrics;
 
 import io.github.helloworlde.netty.rpc.interceptor.Metadata;
 import io.github.helloworlde.netty.rpc.interceptor.ServerCall;

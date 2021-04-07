@@ -1,10 +1,10 @@
-package io.github.helloworlde.netty.opentelemetry.trace.client;
+package io.github.helloworlde.netty.rpc.opentelemetry.trace.client;
 
-import io.github.helloworlde.netty.opentelemetry.trace.config.TracerTextMapSetter;
 import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.interceptor.ClientCall;
 import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.model.Request;
+import io.github.helloworlde.netty.rpc.opentelemetry.trace.config.TracerTextMapSetter;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanKind;

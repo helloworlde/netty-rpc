@@ -1,4 +1,4 @@
-package io.github.helloworlde.netty.opentelemetry.trace.config;
+package io.github.helloworlde.netty.rpc.opentelemetry.trace.config;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;

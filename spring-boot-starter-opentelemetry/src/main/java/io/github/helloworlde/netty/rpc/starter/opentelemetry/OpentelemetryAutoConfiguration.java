@@ -1,10 +1,10 @@
 package io.github.helloworlde.netty.rpc.starter.opentelemetry;
 
-import io.github.helloworlde.netty.opentelemetry.OpenTelemetryConfig;
-import io.github.helloworlde.netty.opentelemetry.metrics.ClientMetricsInterceptor;
-import io.github.helloworlde.netty.opentelemetry.metrics.ServerMetricsInterceptor;
-import io.github.helloworlde.netty.opentelemetry.trace.client.ClientTraceInterceptor;
-import io.github.helloworlde.netty.opentelemetry.trace.server.ServerTraceInterceptor;
+import io.github.helloworlde.netty.rpc.opentelemetry.OpenTelemetryConfig;
+import io.github.helloworlde.netty.rpc.opentelemetry.metrics.ClientMetricsInterceptor;
+import io.github.helloworlde.netty.rpc.opentelemetry.metrics.ServerMetricsInterceptor;
+import io.github.helloworlde.netty.rpc.opentelemetry.trace.client.ClientTraceInterceptor;
+import io.github.helloworlde.netty.rpc.opentelemetry.trace.server.ServerTraceInterceptor;
 import io.opentelemetry.api.OpenTelemetry;
 import io.prometheus.client.CollectorRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
