@@ -10,15 +10,30 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "netty.rpc.opentelemetry")
 public class OpenTelemetryProperties {
 
-    private boolean enabled = true;
-
-    private int sampleRatio = 1;
-
     @Value("${spring.application.name:application}")
     private String serviceName;
 
     @NestedConfigurationProperty
-    private Exporter exporter = new Exporter();
+    private Trace trace = new Trace();
+
+    @NestedConfigurationProperty
+    private Metrics metrics = new Metrics();
+
+
+    @Data
+    static class Metrics {
+        private boolean enabled = true;
+    }
+
+    @Data
+    static class Trace {
+        private boolean enabled = true;
+
+        private int sampleRatio = 1;
+
+        @NestedConfigurationProperty
+        private Exporter exporter = new Exporter();
+    }
 
     @Data
     static class Exporter {

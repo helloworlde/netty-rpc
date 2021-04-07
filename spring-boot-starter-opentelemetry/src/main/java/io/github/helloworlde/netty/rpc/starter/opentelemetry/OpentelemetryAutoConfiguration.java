@@ -16,39 +16,38 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(OpenTelemetryProperties.class)
-@ConditionalOnProperty(value = "netty.rpc.opentelemetry.enabled", matchIfMissing = true)
 public class OpentelemetryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
     public OpenTelemetry openTelemetry(OpenTelemetryProperties properties) {
-        return OpenTelemetryConfig.getOpenTelemetry(properties.getExporter().getName(),
+        return OpenTelemetryConfig.getOpenTelemetry(properties.getTrace().getExporter().getName(),
                 properties.getServiceName(),
-                properties.getExporter().getAddress(),
-                properties.getExporter().getPort(),
-                properties.getSampleRatio());
+                properties.getTrace().getExporter().getAddress(),
+                properties.getTrace().getExporter().getPort(),
+                properties.getTrace().getSampleRatio());
     }
 
     @Bean
-    @ConditionalOnProperty(value = "netty.rpc.client.enabled", matchIfMissing = true)
+    @ConditionalOnProperty(value = "netty.rpc.opentelemetry.trace.enabled", matchIfMissing = true)
     public ClientTraceInterceptor clientTraceInterceptor(OpenTelemetry openTelemetry) {
         return new ClientTraceInterceptor(openTelemetry);
     }
 
     @Bean
-    @ConditionalOnProperty(value = "netty.rpc.client.enabled", matchIfMissing = true)
+    @ConditionalOnProperty(value = "netty.rpc.opentelemetry.metrics.enabled", matchIfMissing = true)
     public ClientMetricsInterceptor clientMetricsInterceptor(CollectorRegistry collectorRegistry) {
         return new ClientMetricsInterceptor(collectorRegistry);
     }
 
     @Bean
-    @ConditionalOnProperty(value = "netty.rpc.server.enabled", matchIfMissing = true)
+    @ConditionalOnProperty(value = "netty.rpc.opentelemetry.trace.enabled", matchIfMissing = true)
     public ServerTraceInterceptor serverTraceInterceptor(OpenTelemetry openTelemetry) {
         return new ServerTraceInterceptor(openTelemetry);
     }
 
     @Bean
-    @ConditionalOnProperty(value = "netty.rpc.server.enabled", matchIfMissing = true)
+    @ConditionalOnProperty(value = "netty.rpc.opentelemetry.metrics.enabled", matchIfMissing = true)
     public ServerMetricsInterceptor serverMetricsInterceptor(CollectorRegistry collectorRegistry) {
         return new ServerMetricsInterceptor(collectorRegistry);
     }
