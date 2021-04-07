@@ -25,10 +25,12 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration(collectorRegistry);
         Meter meter = metricsConfiguration.getMeter();
 
+        // 创建请求数量统计
         requestCountCounter = meter.longCounterBuilder("netty.rpc.request.count")
                                    .setDescription("请求数量")
                                    .build();
 
+        // 创建请求时间统计
         requestTimeRecorder = meter.doubleValueRecorderBuilder("netty.rpc.request.duration")
                                    .setDescription("请求时间")
                                    .setUnit("ms")
@@ -46,11 +48,13 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
         Object result;
         try {
             result = next.call(request, callOptions);
+            // 统计请求数量
             recordRequestCount(serviceName, methodName, "SUCCESS");
         } catch (Exception e) {
             recordRequestCount(serviceName, methodName, "ERROR");
             throw e;
         } finally {
+            // 统计请求时间
             long costTime = Duration.between(startTime, Instant.now()).toMillis();
             recordRequestTime(serviceName, methodName, costTime);
         }
@@ -58,6 +62,7 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
     }
 
     private void recordRequestTime(String serviceName, String methodName, long costTime) {
+        // 指定 Label，添加到统计中
         Labels labels = Labels.builder()
                               .put("service_name", serviceName)
                               .put("method_name", methodName)
@@ -66,6 +71,7 @@ public class ClientMetricsInterceptor implements ClientInterceptor {
     }
 
     private void recordRequestCount(String serviceName, String methodName, String outcome) {
+        // 指定 Label，添加到统计中
         Labels labels = Labels.builder()
                               .put("service_name", serviceName)
                               .put("method_name", methodName)
