@@ -17,6 +17,29 @@ public abstract class LoadBalancer {
 
     protected transient List<Transport> transports = new CopyOnWriteArrayList<>();
 
+    public Transport chooseTransport() throws Exception {
+        Transport transport = choose();
+        int retryTime = 1;
+        while (!transport.isActive()) {
+            log.warn("Channel {} is not active, waiting...", transport);
+            if (retryTime >= 5) {
+                throw new IllegalStateException("没有可用的 Transport");
+            }
+            try {
+                transport.doConnect();
+            } catch (Exception e) {
+                log.error("连接: {} 错误: {}", transport, e.getMessage());
+            }
+            // 重新选择节点
+            if (!transport.isActive()) {
+                log.warn("Reconnect {} failed, choose others transport", transport);
+                transport = choose();
+            }
+            retryTime++;
+        }
+        return transport;
+    }
+
     public abstract Transport choose();
 
     public void setTransportFactory(TransportFactory transportFactory) {
