@@ -39,14 +39,16 @@ public class ServerTraceInterceptor implements ServerInterceptor {
 
     @Override
     public Object interceptorCall(Request request, Metadata metadata, ServerCall next) throws Exception {
-
+        // 从请求中获取 Trace 上下文
         Context extractContext = textFormat.extract(Context.current(), request.getExtra(), getter);
 
+        // 初始化 Span
         String spanName = String.format("%s#%s", request.getServiceName(), request.getMethodName());
         Span span = tracer.spanBuilder(spanName)
                           .setAttribute("ServiceName", request.getServiceName())
                           .setAttribute("MethodName", request.getMethodName())
                           .setAttribute("RequestId", request.getRequestId())
+                          // 将传递的上下文信息添加到当前的 Span 中
                           .setParent(extractContext)
                           .setSpanKind(SpanKind.SERVER)
                           .startSpan();
@@ -57,6 +59,7 @@ public class ServerTraceInterceptor implements ServerInterceptor {
                 .forEach((key, value) -> span.setAttribute(key, String.valueOf(value)));
 
         Object result = null;
+        // 保存并创建新的 Trace 上下文
         try (Scope ignored = span.makeCurrent()) {
             result = next.call(request, metadata);
             span.addEvent("处理结束");
@@ -66,6 +69,7 @@ public class ServerTraceInterceptor implements ServerInterceptor {
             throw e;
         } finally {
             log.info("服务端 TraceId: {}", span.getSpanContext().getTraceId());
+            span.setStatus(StatusCode.OK);
             span.end();
         }
 

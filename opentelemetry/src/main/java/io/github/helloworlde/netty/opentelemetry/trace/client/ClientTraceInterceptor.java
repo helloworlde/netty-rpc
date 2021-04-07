@@ -32,13 +32,17 @@ public class ClientTraceInterceptor implements ClientInterceptor {
 
     public ClientTraceInterceptor(OpenTelemetry openTelemetry) {
         this.openTelemetry = openTelemetry;
+        // 通过 OpenTelemetry 获取 Tracer
         this.tracer = openTelemetry.getTracer("NETTY_RPC");
+        // 获取上下文传输对象
         this.textFormat = openTelemetry.getPropagators().getTextMapPropagator();
+        // 初始化上下文传输设置
         this.setter = new TracerTextMapSetter();
     }
 
     @Override
     public Object interceptorCall(Request request, CallOptions callOptions, ClientCall next) throws Exception {
+        // 创建 Span
         String spanName = String.format("%s#%s", request.getServiceName(), request.getMethodName());
         Span span = tracer.spanBuilder(spanName)
                           .setSpanKind(SpanKind.CLIENT)
@@ -51,10 +55,12 @@ public class ClientTraceInterceptor implements ClientInterceptor {
 
         Object result;
 
-
+        // 保存并创建新的 Trace 上下文
         try (Scope ignored = span.makeCurrent()) {
+            // 将当前的上下文添加到传播中，用于传递给下游
             textFormat.inject(Context.current(), callOptions.getAttributes(), setter);
             span.addEvent("开始调用");
+            // 调用下游
             result = next.call(request, callOptions);
             span.addEvent("接收到结果");
         } catch (Exception e) {
@@ -63,6 +69,8 @@ public class ClientTraceInterceptor implements ClientInterceptor {
             throw e;
         } finally {
             log.info("客户端 TraceId: {}", span.getSpanContext().getTraceId());
+            span.setStatus(StatusCode.OK);
+            // 结束 Span
             span.end();
         }
         return result;

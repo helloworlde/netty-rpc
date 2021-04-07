@@ -21,7 +21,7 @@ public class TracerTextMapGetter implements TextMapGetter<Map<String, Object>> {
         if (Objects.nonNull(carrier) && carrier.containsKey(key)) {
             return carrier.get(key).toString();
         }
-        log.info("没有获取到传递的 trace 信息");
+        log.info("没有获取到 name: {} 的信息", key);
         return null;
     }
 }
