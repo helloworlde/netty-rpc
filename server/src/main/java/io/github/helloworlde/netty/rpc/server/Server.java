@@ -94,7 +94,7 @@ public class Server {
     }
 
     public void shutdown() {
-        log.info("Server 注销");
+        log.debug("Server 注销");
         this.registry.unregister();
         this.transport.shutdown();
     }

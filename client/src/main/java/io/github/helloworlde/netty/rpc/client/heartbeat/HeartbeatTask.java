@@ -26,7 +26,7 @@ public class HeartbeatTask {
     private final int MAX_FAIL_COUNT = 5;
 
     public HeartbeatTask(Transport transport) {
-        log.info("创建心跳");
+        log.debug("创建心跳");
         this.transport = transport;
         this.executorService = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory("heartbeat"));
         this.executorService.scheduleAtFixedRate(() -> {
@@ -36,7 +36,7 @@ public class HeartbeatTask {
             } else {
                 failCounter.incrementAndGet();
                 if (failCounter.get() > MAX_FAIL_COUNT) {
-                    log.info("已经心跳达到最大失败次数，关闭 Transport");
+                    log.error("已经心跳达到最大失败次数，关闭 Transport");
                     transport.shutdown();
                 }
             }
@@ -56,7 +56,7 @@ public class HeartbeatTask {
                                            .timestamp(System.currentTimeMillis())
                                            .build();
 
-            log.info("发送心跳: {}", heartbeat);
+            log.debug("发送心跳: {}", heartbeat);
             Request request = RequestInvoker.createRequest(HeartbeatService.class, "heartbeat", heartbeat);
 
             responseFuture = new ResponseFuture<>();
@@ -71,7 +71,7 @@ public class HeartbeatTask {
     }
 
     public void shutdown() {
-        log.info("关闭心跳");
+        log.debug("关闭心跳");
         this.executorService.shutdown();
     }
 

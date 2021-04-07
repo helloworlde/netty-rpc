@@ -22,7 +22,7 @@ public class RequestProcessor {
     }
 
     public void process(Channel channel, Request request) {
-        log.info("开始处理请求: {}", request);
+        log.debug("开始处理请求: {}", request);
 
         Response response = Response.builder()
                                     .requestId(request.getRequestId())
@@ -51,7 +51,7 @@ public class RequestProcessor {
             response.setError("INTERNAL ERROR");
         } finally {
             channel.writeAndFlush(response)
-                   .addListener(f -> log.info("发送响应完成"));
+                   .addListener(f -> log.debug("发送响应完成"));
         }
     }
 }

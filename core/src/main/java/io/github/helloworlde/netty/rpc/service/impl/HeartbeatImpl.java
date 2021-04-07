@@ -9,7 +9,7 @@ public class HeartbeatImpl implements HeartbeatService {
 
     @Override
     public Heartbeat heartbeat(Heartbeat request) {
-        log.info("心跳: {}", request);
+        log.debug("心跳: {}", request);
         return Heartbeat.builder()
                         .sequenceId(request.getSequenceId())
                         .timestamp(System.currentTimeMillis())

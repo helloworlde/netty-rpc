@@ -13,10 +13,10 @@ public class TracerTextMapSetter implements TextMapSetter<Map<String, Object>> {
     @Override
     public void set(@Nullable Map<String, Object> carrier, String key, String value) {
         if (Objects.isNull(carrier)) {
-            log.info("carrier 是 null");
+            log.debug("carrier 是 null");
             return;
         }
-        log.info("向 Trace 添加 key: {}, value: {}", key, value);
+        log.debug("向 Trace 添加 key: {}, value: {}", key, value);
         carrier.put(key, value);
     }
 }

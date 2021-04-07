@@ -83,21 +83,21 @@ public class Client {
             this.init();
         }
 
-        log.info("Client starting...");
+        log.debug("Client starting...");
         this.nameResolver.setAuthority(this.authority);
         this.nameResolver.start();
     }
 
     public void shutdown() {
         try {
-            log.info("Start shutting down...");
+            log.debug("Start shutting down...");
             this.loadBalancer.shutdown();
             this.nameResolver.shutdown();
             this.workerGroup.shutdownGracefully();
         } catch (Exception e) {
             log.error("关闭错误: {}", e.getMessage(), e);
         } finally {
-            log.info("Shutting down completed.");
+            log.debug("Shutting down completed.");
         }
     }
 

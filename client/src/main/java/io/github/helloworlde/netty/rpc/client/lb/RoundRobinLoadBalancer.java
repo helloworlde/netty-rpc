@@ -15,7 +15,7 @@ public class RoundRobinLoadBalancer extends LoadBalancer {
         if (transports.isEmpty()) {
             throw new IllegalStateException("没有可用的实例");
         } else if (transports.size() == 1) {
-            log.info("只有一个节点");
+            log.debug("只有一个节点");
             return transports.get(0);
         }
         if (counter.incrementAndGet() >= Integer.MAX_VALUE) {

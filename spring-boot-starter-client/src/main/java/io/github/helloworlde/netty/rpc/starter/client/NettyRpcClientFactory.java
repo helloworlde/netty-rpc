@@ -57,7 +57,7 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
         try {
             client = beanFactory.getBean(name, Client.class);
         } catch (BeansException e) {
-            log.info("Client for authority '{}' not exist, create a new one", name);
+            log.debug("Client for authority '{}' not exist, create a new one", name);
             client = initClient(name);
         }
         return client;

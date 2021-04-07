@@ -49,7 +49,7 @@ public class ConsulNameResolver extends NameResolver {
 
     @Override
     public synchronized void refresh() {
-        log.info("开始解析服务: {}", authority);
+        log.debug("开始解析服务: {}", authority);
 
         ConsulResponse<List<ServiceHealth>> healthyServiceInstances = healthClient.getHealthyServiceInstances(this.authority);
 

@@ -8,7 +8,7 @@ public class HelloServiceImpl implements HelloService {
 
     @Override
     public String sayHello(String message) {
-        log.info("新的请求: {}", message);
+        log.debug("新的请求: {}", message);
         return "Hello " + message;
     }
 }

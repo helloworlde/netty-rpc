@@ -37,7 +37,7 @@ public class Transport {
         if (init.get()) {
             return;
         }
-        log.info("Transport init");
+        log.debug("Transport init");
 
         bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("accept-group"));
         workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("io-event-group"));
@@ -57,17 +57,17 @@ public class Transport {
     }
 
     public int doBind(int port) throws InterruptedException {
-        log.info("Transport bind  port: {} ", port);
+        log.debug("Transport bind  port: {} ", port);
         ChannelFuture channelFuture = serverBootstrap.bind(port)
                                                      .addListener(f -> {
                                                          if (f.isSuccess()) {
-                                                             log.info("Server 绑定端口: {} 完成", port);
+                                                             log.debug("Server 绑定端口: {} 完成", port);
                                                          }
                                                      });
 
         channelFuture.await();
         if (!channelFuture.isSuccess()) {
-            log.info("Server 绑定端口: {} 失败，尝试其他端口", port);
+            log.error("Server 绑定端口: {} 失败，尝试其他端口", port);
             return doBind(port + 1);
         }
         this.channel = channelFuture.channel();
@@ -76,14 +76,14 @@ public class Transport {
 
 
     public void shutdown() {
-        log.info("Transport shutting downing...");
+        log.debug("Transport shutting downing...");
         this.bossGroup.shutdownGracefully();
         this.workerGroup.shutdownGracefully();
         this.executor.shutdown();
     }
 
     public void awaitTermination() throws InterruptedException {
-        log.info("Transport running...");
+        log.debug("Transport running...");
         this.channel.closeFuture().sync();
     }
 }

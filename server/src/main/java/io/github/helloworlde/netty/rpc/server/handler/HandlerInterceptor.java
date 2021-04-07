@@ -36,13 +36,13 @@ public class HandlerInterceptor implements ServerInterceptor {
 
         Object[] params = request.getParams();
         Object responseBody = doInvoke(method, serviceDefinition.getInstance(), params);
-        log.info("方法返回结果: {}", responseBody);
+        log.debug("方法返回结果: {}", responseBody);
         return responseBody;
     }
 
 
     private Object doInvoke(Method method, Object instance, Object[] params) throws Exception {
-        log.info("开始调用方法: {}#{}", instance.getClass().getName(), method.getName());
+        log.debug("开始调用方法: {}#{}", instance.getClass().getName(), method.getName());
         return method.invoke(instance, params);
     }
 

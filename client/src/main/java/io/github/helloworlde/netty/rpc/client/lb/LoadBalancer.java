@@ -27,7 +27,7 @@ public abstract class LoadBalancer {
         List<Transport> newTransport = new ArrayList<>(this.transports);
         List<SocketAddress> addresses = new ArrayList<>(resolvedAddresses);
 
-        log.info("更新实例地址: {}", addresses);
+        log.debug("更新实例地址: {}", addresses);
         // 当前的地址
         List<SocketAddress> presentAddresses = newTransport.stream()
                                                            .map(Transport::getAddress)
@@ -38,9 +38,9 @@ public abstract class LoadBalancer {
                                                                    .filter(address -> !addresses.contains(address))
                                                                    .collect(Collectors.toList());
 
-        log.info("需要删除的地址: {}", needRemovedAddresses);
+        log.debug("需要删除的地址: {}", needRemovedAddresses);
         addresses.removeAll(presentAddresses);
-        log.info("删除后的地址: {}", addresses);
+        log.debug("删除后的地址: {}", addresses);
 
         // 为新的地址创建连接
         addresses.stream()
@@ -63,7 +63,7 @@ public abstract class LoadBalancer {
                   });
 
         this.transports = newTransport;
-        log.info("更新后的列表: {}", this.transports.stream().map(Transport::getAddress).collect(Collectors.toList()));
+        log.debug("更新后的列表: {}", this.transports.stream().map(Transport::getAddress).collect(Collectors.toList()));
     }
 
     public void shutdown() {

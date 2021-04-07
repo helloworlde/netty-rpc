@@ -25,26 +25,26 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("Channel Active: {}", ctx.channel());
+        log.debug("Channel Active: {}", ctx.channel());
         this.channel = ctx.channel();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info("Channel Inactive: {}", ctx.channel());
+        log.debug("Channel Inactive: {}", ctx.channel());
         ctx.close();
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
-        log.info("接收到新的请求: {}", request.getRequestId());
+        log.debug("接收到新的请求: {}", request.getRequestId());
 
         executor.execute(() -> this.processor.process(channel, request));
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.info("Read Complete");
+        log.debug("Read Complete");
     }
 
     @Override

@@ -22,7 +22,7 @@ public class NettyRpcClientSmartLifecycle implements SmartLifecycle {
 
     @Override
     public void start() {
-        log.info("开始启动 Client");
+        log.debug("开始启动 Client");
         this.clients = context.getBeansOfType(Client.class);
 
         clients.forEach((name, client) -> {

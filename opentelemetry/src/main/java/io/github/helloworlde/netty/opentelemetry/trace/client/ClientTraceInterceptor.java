@@ -68,7 +68,7 @@ public class ClientTraceInterceptor implements ClientInterceptor {
             span.setStatus(StatusCode.ERROR);
             throw e;
         } finally {
-            log.info("客户端 TraceId: {}", span.getSpanContext().getTraceId());
+            log.debug("客户端 TraceId: {}", span.getSpanContext().getTraceId());
             span.setStatus(StatusCode.OK);
             // 结束 Span
             span.end();

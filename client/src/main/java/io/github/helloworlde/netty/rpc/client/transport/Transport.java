@@ -37,19 +37,19 @@ public class Transport {
         if (Objects.nonNull(channel) && channel.isActive()) {
             return;
         }
-        log.info("开始连接: {}", this.address);
+        log.debug("开始连接: {}", this.address);
 
         ChannelFuture future = bootstrap.connect(address)
                                         .sync()
                                         .await();
 
         if (future.isSuccess()) {
-            log.info("连接: {} 成功", this.address);
+            log.debug("连接: {} 成功", this.address);
             if (enableHeartbeat) {
                 this.heartbeatTask = new HeartbeatTask(this);
             }
             this.channel = future.channel();
-            log.info("channel: {}", channel);
+            log.debug("channel: {}", channel);
             this.handler = this.channel.pipeline().get(ClientHandler.class);
         } else {
             throw new IllegalStateException(String.format("连接 %s 失败", this.address));
@@ -65,7 +65,7 @@ public class Transport {
     }
 
     public void shutdown() {
-        log.info("开始关闭连接: {}", this.address);
+        log.debug("开始关闭连接: {}", this.address);
         this.channel.flush();
         if (enableHeartbeat) {
             this.heartbeatTask.shutdown();
@@ -75,7 +75,7 @@ public class Transport {
 
     public void write(Request request, ResponseFuture<Object> responseFuture) {
 
-        log.info("请求: {}", this.address);
+        log.debug("请求: {}", this.address);
         this.handler.write(request, responseFuture);
     }
 

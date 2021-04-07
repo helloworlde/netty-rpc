@@ -68,7 +68,7 @@ public class ServerTraceInterceptor implements ServerInterceptor {
             span.setStatus(StatusCode.ERROR);
             throw e;
         } finally {
-            log.info("服务端 TraceId: {}", span.getSpanContext().getTraceId());
+            log.debug("服务端 TraceId: {}", span.getSpanContext().getTraceId());
             span.setStatus(StatusCode.OK);
             span.end();
         }
