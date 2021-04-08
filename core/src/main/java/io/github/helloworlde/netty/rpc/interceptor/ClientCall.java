@@ -8,20 +8,20 @@ public class ClientCall {
 
     private final ClientInterceptor interceptor;
 
-    private final ClientCall clientCall;
+    private final ClientCall next;
 
     public ClientCall(ClientInterceptor interceptor) {
-        this.clientCall = null;
+        this.next = null;
         this.interceptor = interceptor;
     }
 
-    public ClientCall(ClientCall clientCall, ClientInterceptor interceptor) {
-        this.clientCall = clientCall;
+    public ClientCall(ClientCall next, ClientInterceptor interceptor) {
+        this.next = next;
         this.interceptor = interceptor;
     }
 
     public Object call(Request request, CallOptions callOptions) throws Exception {
-        return interceptor.interceptorCall(request, callOptions, clientCall);
+        return interceptor.interceptorCall(request, callOptions, next);
     }
 
 }
