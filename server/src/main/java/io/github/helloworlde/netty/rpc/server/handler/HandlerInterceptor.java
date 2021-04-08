@@ -1,7 +1,7 @@
 package io.github.helloworlde.netty.rpc.server.handler;
 
 import io.github.helloworlde.netty.rpc.error.RpcException;
-import io.github.helloworlde.netty.rpc.interceptor.Metadata;
+import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.interceptor.ServerCall;
 import io.github.helloworlde.netty.rpc.interceptor.ServerInterceptor;
 import io.github.helloworlde.netty.rpc.model.Request;
@@ -21,7 +21,7 @@ public class HandlerInterceptor implements ServerInterceptor {
     }
 
     @Override
-    public Object interceptorCall(Request request, Metadata callOptions, ServerCall next) throws Exception {
+    public Object interceptorCall(Request request, CallOptions callOptions, ServerCall next) throws Exception {
 
         String serviceName = Optional.ofNullable(request.getServiceName())
                                      .orElseThrow(() -> new RpcException("ServiceName not present"));

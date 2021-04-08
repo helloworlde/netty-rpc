@@ -1,6 +1,6 @@
 package io.github.helloworlde.netty.rpc.opentelemetry.trace.server;
 
-import io.github.helloworlde.netty.rpc.interceptor.Metadata;
+import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.interceptor.ServerCall;
 import io.github.helloworlde.netty.rpc.interceptor.ServerInterceptor;
 import io.github.helloworlde.netty.rpc.model.Request;
@@ -38,7 +38,7 @@ public class ServerTraceInterceptor implements ServerInterceptor {
     }
 
     @Override
-    public Object interceptorCall(Request request, Metadata metadata, ServerCall next) throws Exception {
+    public Object interceptorCall(Request request, CallOptions callOptions, ServerCall next) throws Exception {
         // 从请求中获取 Trace 上下文
         Context extractContext = textFormat.extract(Context.current(), request.getExtra(), getter);
 
@@ -55,13 +55,13 @@ public class ServerTraceInterceptor implements ServerInterceptor {
 
         span.addEvent("开始处理");
 
-        metadata.getAttributes()
-                .forEach((key, value) -> span.setAttribute(key, String.valueOf(value)));
+        callOptions.getAttributes()
+                   .forEach((key, value) -> span.setAttribute(key, String.valueOf(value)));
 
         Object result = null;
         // 保存并创建新的 Trace 上下文
         try (Scope ignored = span.makeCurrent()) {
-            result = next.call(request, metadata);
+            result = next.call(request, callOptions);
             span.addEvent("处理结束");
         } catch (Exception e) {
             span.addEvent("处理异常");

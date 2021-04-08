@@ -1,6 +1,6 @@
 package io.github.helloworlde.netty.rpc.opentelemetry.metrics;
 
-import io.github.helloworlde.netty.rpc.interceptor.Metadata;
+import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.interceptor.ServerCall;
 import io.github.helloworlde.netty.rpc.interceptor.ServerInterceptor;
 import io.github.helloworlde.netty.rpc.model.Request;
@@ -36,7 +36,7 @@ public class ServerMetricsInterceptor implements ServerInterceptor {
     }
 
     @Override
-    public Object interceptorCall(Request request, Metadata metadata, ServerCall next) throws Exception {
+    public Object interceptorCall(Request request, CallOptions callOptions, ServerCall next) throws Exception {
         Instant startTime = Instant.now();
 
         String serviceName = request.getServiceName();
@@ -44,7 +44,7 @@ public class ServerMetricsInterceptor implements ServerInterceptor {
 
         Object result;
         try {
-            result = next.call(request, metadata);
+            result = next.call(request, callOptions);
             recordResponseCount(serviceName, methodName, "SUCCESS");
         } catch (Exception e) {
             recordResponseCount(serviceName, methodName, "ERROR");

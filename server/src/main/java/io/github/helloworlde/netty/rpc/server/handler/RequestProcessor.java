@@ -1,7 +1,7 @@
 package io.github.helloworlde.netty.rpc.server.handler;
 
 import io.github.helloworlde.netty.rpc.error.RpcException;
-import io.github.helloworlde.netty.rpc.interceptor.Metadata;
+import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.interceptor.ServerCall;
 import io.github.helloworlde.netty.rpc.model.Request;
 import io.github.helloworlde.netty.rpc.model.Response;
@@ -31,17 +31,17 @@ public class RequestProcessor {
         try {
             // Metadata
             SocketAddress remoteAddress = channel.remoteAddress();
-            Metadata metadata = new Metadata();
+            CallOptions callOptions = new CallOptions();
 
             Map<String, Object> extra = request.getExtra();
             if (Objects.nonNull(extra)) {
-                extra.forEach(metadata::withAttribute);
-                metadata.withAttribute("remoteAddress", remoteAddress);
-                metadata.withAttribute("requestId", request.getRequestId());
+                extra.forEach(callOptions::withAttribute);
+                callOptions.withAttribute("remoteAddress", remoteAddress);
+                callOptions.withAttribute("requestId", request.getRequestId());
             }
 
             // 调用
-            Object responseBody = serverCall.call(request, metadata);
+            Object responseBody = serverCall.call(request, callOptions);
             response.setBody(responseBody);
         } catch (RpcException e) {
             log.error("Handler request failed: {}", e.getMessage(), e);

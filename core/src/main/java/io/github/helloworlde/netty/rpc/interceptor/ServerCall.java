@@ -20,8 +20,8 @@ public class ServerCall {
         this.interceptor = interceptor;
     }
 
-    public Object call(Request request, Metadata metadata) throws Exception {
-        return interceptor.interceptorCall(request, metadata, serverCall);
+    public Object call(Request request, CallOptions callOptions) throws Exception {
+        return interceptor.interceptorCall(request, callOptions, serverCall);
     }
 
 }
