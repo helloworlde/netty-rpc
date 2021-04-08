@@ -23,7 +23,7 @@ public abstract class LoadBalancer {
         while (!transport.isActive()) {
             log.warn("Channel {} is not active, waiting...", transport);
             if (retryTime >= 5) {
-                throw new IllegalStateException("没有可用的 Transport");
+                throw new IllegalStateException("选择的服务实例都不可用");
             }
             try {
                 transport.doConnect();
