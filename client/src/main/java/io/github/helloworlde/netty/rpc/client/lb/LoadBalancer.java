@@ -63,7 +63,7 @@ public abstract class LoadBalancer {
 
         log.debug("需要删除的地址: {}", needRemovedAddresses);
         addresses.removeAll(presentAddresses);
-        log.debug("删除后的地址: {}", addresses);
+        log.debug("删除后可用的地址: {}", addresses);
 
         // 为新的地址创建连接
         addresses.stream()
