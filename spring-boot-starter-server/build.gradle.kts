@@ -14,13 +14,17 @@ val springVersion = "2.4.4"
 val springCloudDependenciesVersion = "2020.0.2"
 
 dependencies {
+    // 依赖管理
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudDependenciesVersion}"))
     implementation(platform("org.springframework.boot:spring-boot-dependencies:${springVersion}"))
 
     compile(project(":server"))
 
+    // 自动配置
     implementation("org.springframework.boot:spring-boot-autoconfigure")
+    // 通用依赖
     implementation("org.springframework.cloud:spring-cloud-commons")
+    // 生成配置提示
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springVersion}")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
