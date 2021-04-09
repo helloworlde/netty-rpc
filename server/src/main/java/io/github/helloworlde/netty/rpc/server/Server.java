@@ -60,7 +60,6 @@ public class Server {
     }
 
     public void init() {
-        transport = new Transport();
         serviceRegistry.addService(HeartbeatService.class, new HeartbeatImpl());
 
         HandlerInterceptor handlerInterceptor = new HandlerInterceptor(serviceRegistry);
@@ -78,6 +77,8 @@ public class Server {
         }
 
         RequestProcessor requestProcessor = new RequestProcessor(serverCall);
+
+        transport = new Transport();
         transport.doInit(requestProcessor);
     }
 
