@@ -126,7 +126,7 @@ public class NettyRpcServerSmartLifecycle implements SmartLifecycle {
 }
 ```
 
-### 5. 自动配置
+### 4. 自动配置
 
 - NettyRpcServerAutoConfiguration
 
