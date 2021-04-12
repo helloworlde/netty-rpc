@@ -7,6 +7,9 @@
 - Java 服务
 - SpringBoot Starter
 - 服务注册和服务发现
+- 拦截器
+- 超时控制
+- 心跳  
 - 可扩展负载均衡、服务注册、命名解析
 
 ## 快速使用
@@ -28,6 +31,7 @@
 
 ## 实现
 
+- [核心实现](./doc/Core.md)
 - [服务端启动](./doc/ServerStartup.md)
 - [客户端启动](./doc/ClientStartup.md)
 - [客户端请求流程](./doc/ClientRequest.md)
