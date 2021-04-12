@@ -39,17 +39,21 @@ public class Client {
 
     private boolean enableHeartbeat = true;
 
+    private Long timeout = 10_000L;
+
     public Client() {
     }
 
     public Client(String authority,
                   NameResolver nameResolver,
                   LoadBalancer loadBalancer,
-                  List<ClientInterceptor> interceptors) {
+                  List<ClientInterceptor> interceptors,
+                  Long timeout) {
         this.authority = authority;
         this.nameResolver = nameResolver;
         this.loadBalancer = loadBalancer;
         this.interceptors = interceptors;
+        this.timeout = timeout;
     }
 
     public Client init() {

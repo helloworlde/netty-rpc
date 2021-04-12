@@ -19,6 +19,8 @@ public class ClientProperties {
 
     private Map<String, ClientConfig> config = new HashMap<>();
 
+    private long timeout = 10_000L;
+
     @NestedConfigurationProperty
     private Register register = new Register();
 

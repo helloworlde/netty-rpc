@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +39,10 @@ public class ConsulNameResolver extends NameResolver {
     @Override
     public void start() {
         super.start();
-        this.executor = new ScheduledThreadPoolExecutor(2, new DefaultThreadFactory("name-resolver"));
-        this.executor.scheduleAtFixedRate(this::refresh, 5, 20, TimeUnit.SECONDS);
+        if (Objects.isNull(executor)) {
+            this.executor = new ScheduledThreadPoolExecutor(2, new DefaultThreadFactory("name-resolver"));
+            this.executor.scheduleAtFixedRate(this::refresh, 5, 20, TimeUnit.SECONDS);
+        }
     }
 
     @Override

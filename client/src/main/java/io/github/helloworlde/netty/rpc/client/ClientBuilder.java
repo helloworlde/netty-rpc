@@ -32,6 +32,8 @@ public class ClientBuilder {
 
     private List<ClientInterceptor> interceptors = new ArrayList<>();
 
+    private Long timeout = 10_000L;
+
     public static ClientBuilder builder() {
         return new ClientBuilder();
     }
@@ -66,6 +68,12 @@ public class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder defaultTimeout(long timeout) {
+        this.timeout = timeout;
+        return this;
+    }
+
+
     public Client build() {
         if (Objects.isNull(this.loadBalancer)) {
             this.loadBalancer = new RoundRobinLoadBalancer();
@@ -79,6 +87,6 @@ public class ClientBuilder {
             this.nameResolver = new FixedAddressNameResolver(serverAddress);
         }
 
-        return new Client(authority, nameResolver, loadBalancer, interceptors);
+        return new Client(authority, nameResolver, loadBalancer, interceptors, timeout);
     }
 }

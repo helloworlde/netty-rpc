@@ -21,7 +21,10 @@ public class ServiceProxy implements InvocationHandler {
 
     private final ClientCall clientCall;
 
+    private Long defaultTimeout;
+
     public ServiceProxy(Client client) {
+        this.defaultTimeout = client.getTimeout();
         RequestInvoker invoker = new RequestInvoker(client.getLoadBalancer(), client.getNameResolver());
 
         RequestInterceptor requestInterceptor = new RequestInterceptor(invoker);
@@ -57,7 +60,7 @@ public class ServiceProxy implements InvocationHandler {
         Request request = RequestInvoker.createRequest(proxyClass, methodName, args);
         // 调用选项
         CallOptions callOptions = new CallOptions();
-
+        callOptions.withTimeout(defaultTimeout);
 
         // 发起请求
         Object result = this.clientCall.call(request, callOptions);
