@@ -1,6 +1,7 @@
 package io.github.helloworlde.netty.rpc.client.request;
 
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
+import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
 import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.model.Request;
@@ -16,8 +17,11 @@ public class RequestInvoker {
 
     private final LoadBalancer loadBalancer;
 
-    public RequestInvoker(LoadBalancer loadBalancer) {
+    private final NameResolver nameResolver;
+
+    public RequestInvoker(LoadBalancer loadBalancer, NameResolver nameResolver) {
         this.loadBalancer = loadBalancer;
+        this.nameResolver = nameResolver;
     }
 
     public static Request createRequest(Class<?> proxyClass, String methodName, Object... params) {
@@ -34,6 +38,9 @@ public class RequestInvoker {
     }
 
     public void sendRequest(Request request, CallOptions callOptions, ResponseFuture<Object> responseFuture) throws Exception {
+        if (loadBalancer.getTransports().isEmpty()) {
+            this.nameResolver.refresh();
+        }
         Transport transport = loadBalancer.chooseTransport();
         transport.write(request, responseFuture);
     }

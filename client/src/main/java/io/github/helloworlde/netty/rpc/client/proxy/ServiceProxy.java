@@ -22,7 +22,7 @@ public class ServiceProxy implements InvocationHandler {
     private final ClientCall clientCall;
 
     public ServiceProxy(Client client) {
-        RequestInvoker invoker = new RequestInvoker(client.getLoadBalancer());
+        RequestInvoker invoker = new RequestInvoker(client.getLoadBalancer(), client.getNameResolver());
 
         RequestInterceptor requestInterceptor = new RequestInterceptor(invoker);
         ClientCall tempClientCall = new ClientCall(requestInterceptor);

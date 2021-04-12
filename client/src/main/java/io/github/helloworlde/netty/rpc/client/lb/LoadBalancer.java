@@ -17,6 +17,11 @@ public abstract class LoadBalancer {
 
     protected transient List<Transport> transports = new CopyOnWriteArrayList<>();
 
+
+    public List<Transport> getTransports() {
+        return transports;
+    }
+
     public Transport chooseTransport() throws Exception {
         Transport transport = choose();
         int retryTime = 1;
