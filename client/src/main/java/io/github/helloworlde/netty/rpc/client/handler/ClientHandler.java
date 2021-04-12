@@ -68,6 +68,11 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     public void write(Request request, ResponseFuture<Object> responseFuture) {
         log.debug("请求 {} Channel: {}", request.getRequestId(), channel);
         this.paddingRequests.putIfAbsent(request.getRequestId(), responseFuture);
+        responseFuture.addListener(l -> {
+            if (responseFuture.isDone() || responseFuture.isCancelled()) {
+                completeRequest(request.getRequestId());
+            }
+        });
         channel.writeAndFlush(request)
                .addListener(f -> {
                    if (f.isSuccess()) {
