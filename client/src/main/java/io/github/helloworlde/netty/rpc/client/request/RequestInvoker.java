@@ -5,12 +5,8 @@ import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
 import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.model.Request;
-import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -22,13 +18,6 @@ public class RequestInvoker {
     private final LoadBalancer loadBalancer;
 
     private final NameResolver nameResolver;
-
-    private final ExecutorService executorService = new ThreadPoolExecutor(10,
-            100,
-            60,
-            TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(),
-            new DefaultThreadFactory("request-group"));
 
     public RequestInvoker(LoadBalancer loadBalancer, NameResolver nameResolver) {
         this.loadBalancer = loadBalancer;
@@ -49,24 +38,13 @@ public class RequestInvoker {
     }
 
     public void sendRequest(Request request, CallOptions callOptions, ResponseFuture<Object> responseFuture) throws Exception {
-        executorService.submit(() -> executeRequest(request, callOptions, responseFuture));
-    }
-
-    private void executeRequest(Request request, CallOptions callOptions, ResponseFuture<Object> responseFuture) {
-        try {
-            if (loadBalancer.getTransports().isEmpty()) {
-                log.info("没有可用的 Transport，更新 Transport");
-                this.nameResolver.refresh();
-            }
-            callOptions.checkDeadlineExceeded();
-
-            Transport transport = loadBalancer.chooseTransport();
-            callOptions.checkDeadlineExceeded();
-
-            transport.write(request, responseFuture);
-        } catch (Exception e) {
-            responseFuture.setFailure(e);
+        if (loadBalancer.getTransports().isEmpty()) {
+            log.info("没有可用的 Transport，更新 Transport");
+            this.nameResolver.refresh();
         }
+
+        Transport transport = loadBalancer.chooseTransport();
+        transport.write(request, responseFuture);
     }
 
     public Object waitResponse(ResponseFuture<Object> future, Long timeout) throws Exception {

@@ -2,6 +2,7 @@ package io.github.helloworlde.netty.rpc.client.proxy;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.request.RequestInvoker;
+import io.github.helloworlde.netty.rpc.context.Context;
 import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.interceptor.ClientCall;
 import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
@@ -14,6 +15,7 @@ import java.lang.reflect.Proxy;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -59,9 +61,11 @@ public class ServiceProxy implements InvocationHandler {
         // 创建请求
         Request request = RequestInvoker.createRequest(proxyClass, methodName, args);
         // 调用选项
-        CallOptions callOptions = new CallOptions();
-        callOptions.withTimeout(defaultTimeout);
+        Long timeout = Optional.ofNullable(Context.current().getTimeout())
+                               .orElse(defaultTimeout);
 
+        CallOptions callOptions = new CallOptions();
+        callOptions.withTimeout(timeout);
         // 发起请求
         Object result = this.clientCall.call(request, callOptions);
 

@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EqualsAndHashCode(callSuper = true)
@@ -86,9 +87,20 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     }
 
     public void receiveResponse(Response msg) {
+        Long requestId = msg.getRequestId();
+        ResponseFuture<Object> responseFuture = paddingRequests.get(msg.getRequestId());
+        if (Objects.isNull(responseFuture)) {
+            log.error("请求 {} 不存在或已被取消", requestId);
+            return;
+        }
+
+        if (responseFuture.isDone() || responseFuture.isCancelled()) {
+            log.error("请求 {} 已被完成或取消", requestId);
+            return;
+        }
+
         if (msg.getError() == null) {
-            paddingRequests.get(msg.getRequestId())
-                           .setSuccess(msg.getBody());
+            responseFuture.setSuccess(msg.getBody());
         } else {
             receiveError(msg.getRequestId(), new RpcException("Response failed: " + msg.getError()));
         }
