@@ -53,6 +53,7 @@ public class RequestInterceptor implements ClientInterceptor {
         try {
             return invoker.waitResponse(responseFuture, callOptions.getTimeout());
         } catch (Exception e) {
+            // 取消当前执行的任务，避免超时后长时间阻塞
             requestFuture.cancel(true);
             throw e;
         }

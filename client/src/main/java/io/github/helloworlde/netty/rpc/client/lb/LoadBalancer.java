@@ -22,29 +22,6 @@ public abstract class LoadBalancer {
         return transports;
     }
 
-    public Transport chooseTransport() throws Exception {
-        Transport transport = choose();
-        int retryTime = 1;
-        while (!transport.isActive()) {
-            log.warn("Channel {} is not active, waiting...", transport);
-            if (retryTime >= 5) {
-                throw new IllegalStateException("选择的服务实例都不可用");
-            }
-            try {
-                transport.doConnect();
-            } catch (Exception e) {
-                log.error("连接: {} 错误: {}", transport, e.getMessage());
-            }
-            // 重新选择节点
-            if (!transport.isActive()) {
-                log.warn("Reconnect {} failed, choose others transport", transport);
-                transport = choose();
-            }
-            retryTime++;
-        }
-        return transport;
-    }
-
     public abstract Transport choose();
 
     public void setTransportFactory(TransportFactory transportFactory) {

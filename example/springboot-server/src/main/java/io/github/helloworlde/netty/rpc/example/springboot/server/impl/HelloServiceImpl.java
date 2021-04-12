@@ -14,7 +14,7 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public String sayHello(String message) {
         log.info("新的请求: {}", message);
-        Thread.sleep(RandomUtils.nextInt(0, 100));
+        Thread.sleep(RandomUtils.nextInt(0, 1000));
         return "Hello " + message;
     }
 }

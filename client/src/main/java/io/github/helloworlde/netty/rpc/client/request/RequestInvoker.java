@@ -43,7 +43,7 @@ public class RequestInvoker {
             this.nameResolver.refresh();
         }
 
-        Transport transport = loadBalancer.chooseTransport();
+        Transport transport = loadBalancer.choose();
         transport.write(request, responseFuture);
     }
 
