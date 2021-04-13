@@ -1,11 +1,15 @@
 package io.github.helloworlde.netty.rpc.serialize;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SerializeProvider {
+    private static final Logger log = LoggerFactory.getLogger(SerializeProvider.class);
 
     private static final Map<Integer, Serialize> idRegistry = new ConcurrentHashMap<>();
     private static final Map<String, Serialize> nameRegistry = new ConcurrentHashMap<>();
@@ -13,6 +17,7 @@ public class SerializeProvider {
     static {
         ServiceLoader<Serialize> serializes = ServiceLoader.load(Serialize.class);
         serializes.forEach(e -> {
+            log.info("加载 Serialize 策略, id: {}, name: {}", e.getId(), e.getName());
             if (idRegistry.containsKey(e.getId())) {
                 throw new IllegalArgumentException(String.format("Serialize id %d repeated for class: %s", e.getId(), e.getClass().getName()));
             }
