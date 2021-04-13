@@ -9,6 +9,11 @@ public class RandomLoadBalancer extends LoadBalancer {
     private final Random random = new Random();
 
     @Override
+    public String getName() {
+        return "random";
+    }
+
+    @Override
     public Transport choose() {
         if (transports.isEmpty()) {
             throw new IllegalStateException("没有找到连接成功的服务实例");

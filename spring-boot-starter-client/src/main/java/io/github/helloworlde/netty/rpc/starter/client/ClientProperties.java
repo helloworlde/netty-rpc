@@ -23,6 +23,8 @@ public class ClientProperties {
 
     private String serializeName = "json";
 
+    private String loadBalancerName = "round_robin";
+
     @NestedConfigurationProperty
     private Register register = new Register();
 

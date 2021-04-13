@@ -1,7 +1,5 @@
 package io.github.helloworlde.netty.rpc.client;
 
-import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
-import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.FixedAddressNameResolver;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
@@ -26,7 +24,7 @@ public class ClientBuilder {
 
     private NameResolver nameResolver;
 
-    private LoadBalancer loadBalancer;
+    private String loadBalancer = "round_robin";
 
     private Registry registry;
 
@@ -50,7 +48,7 @@ public class ClientBuilder {
         return this;
     }
 
-    public ClientBuilder loadBalancer(LoadBalancer loadBalancer) {
+    public ClientBuilder loadBalancer(String loadBalancer) {
         this.loadBalancer = loadBalancer;
         return this;
     }
@@ -81,10 +79,6 @@ public class ClientBuilder {
     }
 
     public Client build() {
-        if (Objects.isNull(this.loadBalancer)) {
-            this.loadBalancer = new RoundRobinLoadBalancer();
-        }
-
         if (Objects.isNull(this.registry)) {
             this.registry = new NoopRegistry();
         }

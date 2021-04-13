@@ -1,7 +1,5 @@
 package io.github.helloworlde.netty.rpc.starter.client;
 
-import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
-import io.github.helloworlde.netty.rpc.client.lb.RoundRobinLoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.FixedAddressNameResolver;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
@@ -24,10 +22,8 @@ public class NettyRpcClientAutoConfiguration {
     public NettyRpcClientFactory rpcClientFactory(ClientProperties clientProperties,
                                                   @Nullable Registry registry,
                                                   @Nullable NameResolver nameResolver,
-                                                  @Nullable LoadBalancer loadBalancer,
                                                   @Nullable ClientInterceptor[] interceptors) {
-
-        return new NettyRpcClientFactory(clientProperties, registry, nameResolver, loadBalancer, interceptors);
+        return new NettyRpcClientFactory(clientProperties, registry, nameResolver, interceptors);
     }
 
     @Bean
@@ -44,12 +40,6 @@ public class NettyRpcClientAutoConfiguration {
     @ConditionalOnMissingBean(NameResolver.class)
     public NameResolver nameResolver(ClientProperties clientProperties) {
         return new FixedAddressNameResolver(clientProperties.getResolver().getAddresses());
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(LoadBalancer.class)
-    public LoadBalancer loadBalancer() {
-        return new RoundRobinLoadBalancer();
     }
 
     @Bean

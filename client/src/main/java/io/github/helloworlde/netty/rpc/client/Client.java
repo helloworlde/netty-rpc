@@ -2,6 +2,7 @@ package io.github.helloworlde.netty.rpc.client;
 
 import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
 import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
+import io.github.helloworlde.netty.rpc.client.lb.LoadBalancerProvider;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.ClientChannelInitializer;
 import io.github.helloworlde.netty.rpc.client.transport.TransportFactory;
@@ -27,6 +28,8 @@ public class Client {
 
     private String authority;
 
+    private String loadBalancerName = "round_robin";
+
     private LoadBalancer loadBalancer;
 
     private NameResolver nameResolver;
@@ -48,13 +51,13 @@ public class Client {
 
     public Client(String authority,
                   NameResolver nameResolver,
-                  LoadBalancer loadBalancer,
+                  String loadBalancerName,
                   List<ClientInterceptor> interceptors,
                   Long timeout,
                   String serializeName) {
         this.authority = authority;
         this.nameResolver = nameResolver;
-        this.loadBalancer = loadBalancer;
+        this.loadBalancerName = loadBalancerName;
         this.interceptors = interceptors;
         this.timeout = timeout;
         this.serializeName = serializeName;
@@ -74,7 +77,7 @@ public class Client {
                  .handler(new ClientChannelInitializer(serializeName, handler));
 
         TransportFactory transportFactory = new TransportFactory(bootstrap, enableHeartbeat);
-
+        this.loadBalancer = LoadBalancerProvider.getLoadBalancer(this.loadBalancerName);
         if (Objects.nonNull(this.loadBalancer)) {
             this.loadBalancer.setTransportFactory(transportFactory);
         }

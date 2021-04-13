@@ -24,6 +24,8 @@ public abstract class LoadBalancer {
 
     public abstract Transport choose();
 
+    public abstract String getName();
+
     public void setTransportFactory(TransportFactory transportFactory) {
         this.transportFactory = transportFactory;
     }

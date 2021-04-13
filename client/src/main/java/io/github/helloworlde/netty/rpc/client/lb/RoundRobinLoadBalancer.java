@@ -11,6 +11,11 @@ public class RoundRobinLoadBalancer extends LoadBalancer {
     private AtomicInteger counter = new AtomicInteger();
 
     @Override
+    public String getName() {
+        return "round_robin";
+    }
+
+    @Override
     public Transport choose() {
         if (transports.isEmpty()) {
             throw new IllegalStateException("没有找到连接成功的服务实例");

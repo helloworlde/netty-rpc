@@ -1,7 +1,6 @@
 package io.github.helloworlde.netty.rpc.starter.client;
 
 import io.github.helloworlde.netty.rpc.client.Client;
-import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
 import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.registry.Registry;
@@ -26,8 +25,6 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
 
     private final Registry registry;
 
-    private final LoadBalancer loadBalancer;
-
     private List<ClientInterceptor> interceptors;
 
     private ClientProperties clientProperties;
@@ -35,12 +32,10 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
     public NettyRpcClientFactory(ClientProperties clientProperties,
                                  Registry registry,
                                  NameResolver nameResolver,
-                                 LoadBalancer loadBalancer,
                                  ClientInterceptor[] interceptors) {
         this.clientProperties = clientProperties;
         this.registry = registry;
         this.nameResolver = nameResolver;
-        this.loadBalancer = loadBalancer;
         if (Objects.nonNull(interceptors)) {
             this.interceptors = Arrays.asList(interceptors);
         }
@@ -71,11 +66,11 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
         properties.add("authority", name);
         properties.add("nameResolver", this.nameResolver);
         properties.add("registry", this.registry);
-        properties.add("loadBalancer", loadBalancer);
         properties.add("interceptors", interceptors);
         properties.add("enableHeartbeat", clientProperties.isEnableHeartbeat());
         properties.add("timeout", clientProperties.getTimeout());
         properties.add("serializeName", clientProperties.getSerializeName());
+        properties.add("loadBalancerName", clientProperties.getLoadBalancerName());
 
         beanDefinition.setPropertyValues(properties);
 
