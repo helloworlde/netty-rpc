@@ -2,49 +2,22 @@ package io.github.helloworlde.netty.rpc.client.proxy;
 
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.request.RequestInvoker;
-import io.github.helloworlde.netty.rpc.context.Context;
-import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
-import io.github.helloworlde.netty.rpc.interceptor.ClientCall;
-import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
+import io.github.helloworlde.netty.rpc.client.request.ResponseFuture;
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class ServiceProxy implements InvocationHandler {
 
-    private final ClientCall clientCall;
 
-    private Long defaultTimeout;
+    private final RequestInvoker invoker;
 
     public ServiceProxy(Client client) {
-        this.defaultTimeout = client.getTimeout();
-        RequestInvoker invoker = new RequestInvoker(client.getLoadBalancer(), client.getNameResolver());
-
-        RequestInterceptor requestInterceptor = new RequestInterceptor(invoker);
-        ClientCall tempClientCall = new ClientCall(requestInterceptor);
-
-        List<ClientInterceptor> interceptors = client.getInterceptors();
-
-        // 初始化拦截器
-        if (Objects.nonNull(interceptors)) {
-            interceptors = interceptors.stream()
-                                       .sorted(Comparator.comparing(ClientInterceptor::getOrder))
-                                       .collect(Collectors.toList());
-            for (ClientInterceptor interceptor : interceptors) {
-                tempClientCall = new ClientCall(tempClientCall, interceptor);
-            }
-        }
-
-        this.clientCall = tempClientCall;
+        this.invoker = new RequestInvoker(client.getTransport());
     }
 
     @SuppressWarnings("all")
@@ -58,17 +31,10 @@ public class ServiceProxy implements InvocationHandler {
         String methodName = method.getName();
         Class<?> returnType = method.getReturnType();
 
-        // 创建请求
         Request request = RequestInvoker.createRequest(proxyClass, methodName, args);
-        // 调用选项
-        Long timeout = Optional.ofNullable(Context.current().getTimeout())
-                               .orElse(defaultTimeout);
-
-        CallOptions callOptions = new CallOptions();
-        callOptions.withTimeout(timeout);
-        // 发起请求
-        Object result = this.clientCall.call(request, callOptions);
-
+        ResponseFuture<Object> responseFuture = new ResponseFuture<>();
+        this.invoker.sendRequest(request, responseFuture);
+        Object result = this.invoker.waitResponse(responseFuture);
         return returnType.cast(result);
     }
 

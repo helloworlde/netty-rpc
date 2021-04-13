@@ -1,7 +1,6 @@
 package io.github.helloworlde.netty.rpc.codec;
 
 import io.github.helloworlde.netty.rpc.serialize.Serialize;
-import io.github.helloworlde.netty.rpc.serialize.SerializeProvider;
 import io.github.helloworlde.netty.rpc.util.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,8 +14,11 @@ public class MessageDecoder<T> extends ByteToMessageDecoder {
 
     private final Class<T> decodeClass;
 
-    public MessageDecoder(Class<T> decodeClass) {
+    private final Serialize serialize;
+
+    public MessageDecoder(Class<T> decodeClass, Serialize serialize) {
         this.decodeClass = decodeClass;
+        this.serialize = serialize;
     }
 
     /**
@@ -33,7 +35,6 @@ public class MessageDecoder<T> extends ByteToMessageDecoder {
 
         // 序列化类型
         int serializeType = in.readInt();
-        Serialize serialize = SerializeProvider.getSerialize(serializeType);
 
         // Body
         int length = in.readInt();

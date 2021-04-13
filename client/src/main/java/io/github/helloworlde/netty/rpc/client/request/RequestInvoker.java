@@ -1,13 +1,9 @@
 package io.github.helloworlde.netty.rpc.client.request;
 
-import io.github.helloworlde.netty.rpc.client.lb.LoadBalancer;
-import io.github.helloworlde.netty.rpc.client.nameresovler.NameResolver;
 import io.github.helloworlde.netty.rpc.client.transport.Transport;
-import io.github.helloworlde.netty.rpc.interceptor.CallOptions;
 import io.github.helloworlde.netty.rpc.model.Request;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -15,13 +11,10 @@ public class RequestInvoker {
 
     private static final AtomicLong requestSeq = new AtomicLong();
 
-    private final LoadBalancer loadBalancer;
+    private Transport transport;
 
-    private final NameResolver nameResolver;
-
-    public RequestInvoker(LoadBalancer loadBalancer, NameResolver nameResolver) {
-        this.loadBalancer = loadBalancer;
-        this.nameResolver = nameResolver;
+    public RequestInvoker(Transport transport) {
+        this.transport = transport;
     }
 
     public static Request createRequest(Class<?> proxyClass, String methodName, Object... params) {
@@ -37,13 +30,7 @@ public class RequestInvoker {
         return requestSeq.getAndIncrement();
     }
 
-    public void sendRequest(Request request, CallOptions callOptions, ResponseFuture<Object> responseFuture) throws Exception {
-        if (loadBalancer.getTransports().isEmpty()) {
-            log.info("没有可用的 Transport，更新 Transport");
-            this.nameResolver.refresh();
-        }
-
-        Transport transport = loadBalancer.choose();
+    public void sendRequest(Request request, ResponseFuture<Object> responseFuture) throws Exception {
         if (!transport.isActive()) {
             log.warn("{} is not active, try to reconnect", transport);
             transport.doConnect();
@@ -51,12 +38,8 @@ public class RequestInvoker {
         transport.write(request, responseFuture);
     }
 
-    public Object waitResponse(ResponseFuture<Object> future, Long timeout) throws Exception {
-        if (timeout <= 0) {
-            return future.get();
-        } else {
-            return future.get(timeout, TimeUnit.MILLISECONDS);
-        }
+    public Object waitResponse(ResponseFuture<Object> future) throws Exception {
+        return future.get();
     }
 
 }

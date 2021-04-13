@@ -1,7 +1,7 @@
 package io.github.helloworlde.netty.rpc.server.transport;
 
+import io.github.helloworlde.netty.rpc.serialize.JsonSerialize;
 import io.github.helloworlde.netty.rpc.serialize.Serialize;
-import io.github.helloworlde.netty.rpc.serialize.SerializeProvider;
 import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -35,12 +35,12 @@ public class Transport {
 
     private Channel channel;
 
-    public synchronized void doInit(String serializeName, RequestProcessor requestProcessor) {
+    public synchronized void doInit(RequestProcessor requestProcessor) {
         if (init.get()) {
             return;
         }
         log.debug("Transport init");
-        Serialize serialize = SerializeProvider.getSerializeByName(serializeName);
+        Serialize serialize = new JsonSerialize();
 
         bossGroup = new NioEventLoopGroup(4, new DefaultThreadFactory("accept-group"));
         workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("io-event-group"));

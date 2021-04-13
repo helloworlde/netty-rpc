@@ -31,7 +31,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("Channel Inactive: {}", ctx.channel());
         ctx.close();
     }
 
@@ -40,11 +39,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
         log.debug("接收到新的请求: {}", request.getRequestId());
 
         executor.execute(() -> this.processor.process(channel, request));
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.debug("Read Complete");
     }
 
     @Override

@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EqualsAndHashCode(callSuper = true)
@@ -44,17 +43,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.debug("Channel Active");
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.error("channelInactive");
-        ctx.close();
-    }
-
-    @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         log.debug("Channel Read Complete");
         ctx.flush();
@@ -69,11 +57,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     public void write(Request request, ResponseFuture<Object> responseFuture) {
         log.debug("请求 {} Channel: {}", request.getRequestId(), channel);
         this.paddingRequests.putIfAbsent(request.getRequestId(), responseFuture);
-        responseFuture.addListener(l -> {
-            if (responseFuture.isDone() || responseFuture.isCancelled()) {
-                completeRequest(request.getRequestId());
-            }
-        });
         channel.writeAndFlush(request)
                .addListener(f -> {
                    if (f.isSuccess()) {
@@ -87,18 +70,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     }
 
     public void receiveResponse(Response msg) {
-        Long requestId = msg.getRequestId();
         ResponseFuture<Object> responseFuture = paddingRequests.get(msg.getRequestId());
-        if (Objects.isNull(responseFuture)) {
-            log.error("请求 {} 不存在或已被取消", requestId);
-            return;
-        }
-
-        if (responseFuture.isDone() || responseFuture.isCancelled()) {
-            log.error("请求 {} 已被完成或取消", requestId);
-            return;
-        }
-
         if (msg.getError() == null) {
             responseFuture.setSuccess(msg.getBody());
         } else {

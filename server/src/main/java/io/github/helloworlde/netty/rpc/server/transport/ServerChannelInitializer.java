@@ -31,9 +31,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         // lengthFieldLength 请求内容的长度标识偏移量 Length = 4
         ch.pipeline()
           .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 8, 4))
-          // .addLast(new ReadTimeoutHandler(10))
-          // .addLast(new WriteTimeoutHandler(10))
-          .addLast(new MessageDecoder<>(Request.class))
+          .addLast(new MessageDecoder<>(Request.class, serialize))
           .addLast(new MessageEncoder(this.serialize))
           .addLast(new ServerHandler(this.processor, this.executor));
     }
