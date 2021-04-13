@@ -3,7 +3,7 @@ package io.github.helloworlde.netty.rpc.server.transport;
 import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
 import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
 import io.github.helloworlde.netty.rpc.model.Request;
-import io.github.helloworlde.netty.rpc.serialize.SerializeProvider;
+import io.github.helloworlde.netty.rpc.serialize.Serialize;
 import io.github.helloworlde.netty.rpc.server.handler.RequestProcessor;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -17,12 +17,12 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
     private final Executor executor;
 
-    private final String serializeName;
+    private final Serialize serialize;
 
-    public ServerChannelInitializer(RequestProcessor processor, Executor executor, String serializeName) {
+    public ServerChannelInitializer(RequestProcessor processor, Executor executor, Serialize serialize) {
         this.processor = processor;
         this.executor = executor;
-        this.serializeName = serializeName;
+        this.serialize = serialize;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
           // .addLast(new ReadTimeoutHandler(10))
           // .addLast(new WriteTimeoutHandler(10))
           .addLast(new MessageDecoder<>(Request.class))
-          .addLast(new MessageEncoder(SerializeProvider.getSerializeByName(serializeName)))
+          .addLast(new MessageEncoder(this.serialize))
           .addLast(new ServerHandler(this.processor, this.executor));
     }
 }

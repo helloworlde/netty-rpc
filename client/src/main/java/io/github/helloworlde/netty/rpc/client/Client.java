@@ -8,6 +8,8 @@ import io.github.helloworlde.netty.rpc.client.transport.ClientChannelInitializer
 import io.github.helloworlde.netty.rpc.client.transport.TransportFactory;
 import io.github.helloworlde.netty.rpc.interceptor.ClientInterceptor;
 import io.github.helloworlde.netty.rpc.registry.Registry;
+import io.github.helloworlde.netty.rpc.serialize.Serialize;
+import io.github.helloworlde.netty.rpc.serialize.SerializeProvider;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -68,13 +70,15 @@ public class Client {
         ClientHandler handler = new ClientHandler();
         workerGroup = new NioEventLoopGroup(10, new DefaultThreadFactory("transport-io"));
 
+        Serialize serialize = SerializeProvider.getSerializeByName(serializeName);
+
         bootstrap.group(workerGroup)
                  .channel(NioSocketChannel.class)
                  .option(ChannelOption.SO_KEEPALIVE, true)
                  .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                  .option(ChannelOption.TCP_NODELAY, true)
                  .handler(new LoggingHandler(LogLevel.TRACE))
-                 .handler(new ClientChannelInitializer(serializeName, handler));
+                 .handler(new ClientChannelInitializer(serialize, handler));
 
         TransportFactory transportFactory = new TransportFactory(bootstrap, enableHeartbeat);
         this.loadBalancer = LoadBalancerProvider.getLoadBalancer(this.loadBalancerName);
