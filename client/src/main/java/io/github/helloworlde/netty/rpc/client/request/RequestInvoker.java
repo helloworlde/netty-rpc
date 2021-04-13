@@ -44,6 +44,10 @@ public class RequestInvoker {
         }
 
         Transport transport = loadBalancer.choose();
+        if (!transport.isActive()) {
+            log.warn("{} is not active, try to reconnect", transport);
+            transport.doConnect();
+        }
         transport.write(request, responseFuture);
     }
 
