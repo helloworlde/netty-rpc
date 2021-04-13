@@ -32,7 +32,7 @@ public class ServerBuilder {
 
     private List<ServerInterceptor> interceptors = new ArrayList<>();
 
-    private String serializeName;
+    private String serializeName = "json";
 
     public ServerBuilder() {
     }
