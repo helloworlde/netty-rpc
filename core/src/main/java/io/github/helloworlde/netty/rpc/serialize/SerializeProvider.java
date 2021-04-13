@@ -26,11 +26,11 @@ public class SerializeProvider {
 
     public static Serialize getSerialize(Integer id) {
         return Optional.ofNullable(idRegistry.get(id))
-                       .orElseThrow(() -> new IllegalArgumentException(String.format("UNKNOWN Serialize id: %d", id)));
+                       .orElseThrow(() -> new IllegalArgumentException(String.format("Unknown Serialize id: %d", id)));
     }
 
     public static Serialize getSerializeByName(String name) {
         return Optional.ofNullable(nameRegistry.get(name))
-                       .orElseThrow(() -> new IllegalArgumentException(String.format("UNKNOWN Serialize name: %s", name)));
+                       .orElseThrow(() -> new IllegalArgumentException(String.format("Unknown Serialize name: %s", name)));
     }
 }

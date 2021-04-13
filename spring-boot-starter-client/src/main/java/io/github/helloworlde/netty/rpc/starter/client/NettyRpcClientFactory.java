@@ -75,6 +75,7 @@ public class NettyRpcClientFactory implements BeanFactoryAware {
         properties.add("interceptors", interceptors);
         properties.add("enableHeartbeat", clientProperties.isEnableHeartbeat());
         properties.add("timeout", clientProperties.getTimeout());
+        properties.add("serializeName", clientProperties.getSerializeName());
 
         beanDefinition.setPropertyValues(properties);
 

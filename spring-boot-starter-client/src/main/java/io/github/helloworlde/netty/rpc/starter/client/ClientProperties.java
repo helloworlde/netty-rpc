@@ -21,6 +21,8 @@ public class ClientProperties {
 
     private long timeout = 10_000L;
 
+    private String serializeName = "json";
+
     @NestedConfigurationProperty
     private Register register = new Register();
 

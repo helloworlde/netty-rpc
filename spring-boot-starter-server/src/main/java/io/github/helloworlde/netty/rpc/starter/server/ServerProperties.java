@@ -15,6 +15,8 @@ public class ServerProperties {
 
     private int port = 9090;
 
+    private String serializeName = "json";
+
     @NestedConfigurationProperty
     private Register register = new Register();
 

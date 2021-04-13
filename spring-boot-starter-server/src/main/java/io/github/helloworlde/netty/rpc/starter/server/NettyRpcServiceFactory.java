@@ -84,6 +84,7 @@ public class NettyRpcServiceFactory implements BeanFactoryAware {
         properties.add("metadata", serverProperties.getRegister().getMetadata());
         properties.add("registry", this.registry);
         properties.add("interceptors", interceptors);
+        properties.add("serializeName", serverProperties.getSerializeName());
         beanDefinition.setPropertyValues(properties);
 
         beanDefinition.setInitMethodName("init");
