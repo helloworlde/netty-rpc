@@ -4,15 +4,19 @@ import io.github.helloworlde.netty.rpc.client.handler.ClientHandler;
 import io.github.helloworlde.netty.rpc.codec.MessageDecoder;
 import io.github.helloworlde.netty.rpc.codec.MessageEncoder;
 import io.github.helloworlde.netty.rpc.model.Response;
+import io.github.helloworlde.netty.rpc.serialize.SerializeProvider;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private ClientHandler handler;
+    private final ClientHandler handler;
 
-    public ClientChannelInitializer(ClientHandler handler) {
+    private final String serializeName;
+
+    public ClientChannelInitializer(String serializeName, ClientHandler handler) {
+        this.serializeName = serializeName;
         this.handler = handler;
     }
 
@@ -24,7 +28,7 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
           .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 8, 4))
           // .addLast(new ReadTimeoutHandler(10))
           // .addLast(new WriteTimeoutHandler(10))
-          .addLast(new MessageEncoder())
+          .addLast(new MessageEncoder(SerializeProvider.getSerializeByName(serializeName)))
           .addLast(new MessageDecoder<>(Response.class))
           .addLast(handler);
     }

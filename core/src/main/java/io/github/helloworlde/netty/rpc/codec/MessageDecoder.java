@@ -1,7 +1,7 @@
 package io.github.helloworlde.netty.rpc.codec;
 
 import io.github.helloworlde.netty.rpc.serialize.Serialize;
-import io.github.helloworlde.netty.rpc.serialize.SerializeEnum;
+import io.github.helloworlde.netty.rpc.serialize.SerializeProvider;
 import io.github.helloworlde.netty.rpc.util.Constants;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,7 +33,7 @@ public class MessageDecoder<T> extends ByteToMessageDecoder {
 
         // 序列化类型
         int serializeType = in.readInt();
-        Serialize serialize = SerializeEnum.getById(serializeType);
+        Serialize serialize = SerializeProvider.getSerialize(serializeType);
 
         // Body
         int length = in.readInt();

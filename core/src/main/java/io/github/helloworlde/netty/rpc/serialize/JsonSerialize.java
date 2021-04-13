@@ -5,34 +5,31 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Objects;
-
 public class JsonSerialize implements Serialize {
 
     private static JsonSerialize jsonSerialize;
 
     private final ObjectMapper objectMapper;
 
-    private JsonSerialize() {
+    public JsonSerialize() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         this.objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
     }
 
-    public static JsonSerialize getInstance() {
-        if (Objects.isNull(jsonSerialize)) {
-            synchronized (JsonSerialize.class) {
-                if (Objects.isNull(jsonSerialize)) {
-                    jsonSerialize = new JsonSerialize();
-                }
-            }
-        }
-        return jsonSerialize;
-    }
-
     @Override
     public byte[] serialize(Object object) throws JsonProcessingException {
         return objectMapper.writeValueAsBytes(object);
+    }
+
+    @Override
+    public Integer getId() {
+        return 1;
+    }
+
+    @Override
+    public String getName() {
+        return "json";
     }
 
     @Override

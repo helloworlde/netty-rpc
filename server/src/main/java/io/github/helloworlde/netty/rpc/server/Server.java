@@ -40,6 +40,8 @@ public class Server {
 
     List<ServerInterceptor> interceptors;
 
+    private String serializeName = "json";
+
     public Server() {
     }
 
@@ -49,7 +51,8 @@ public class Server {
                   ServiceRegistry serviceRegistry,
                   Map<String, String> metadata,
                   Registry registry,
-                  List<ServerInterceptor> interceptors) {
+                  List<ServerInterceptor> interceptors,
+                  String serializeName) {
         this.name = name;
         this.port = port;
         this.address = address;
@@ -57,6 +60,7 @@ public class Server {
         this.metadata = metadata;
         this.registry = registry;
         this.interceptors = interceptors;
+        this.serializeName = serializeName;
     }
 
     public void init() {
@@ -79,7 +83,7 @@ public class Server {
         RequestProcessor requestProcessor = new RequestProcessor(serverCall);
 
         transport = new Transport();
-        transport.doInit(requestProcessor);
+        transport.doInit(serializeName, requestProcessor);
     }
 
     public void start() throws InterruptedException {

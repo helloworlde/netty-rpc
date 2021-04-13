@@ -34,6 +34,8 @@ public class ClientBuilder {
 
     private Long timeout = 10_000L;
 
+    private String serializeName = "json";
+
     public static ClientBuilder builder() {
         return new ClientBuilder();
     }
@@ -73,6 +75,10 @@ public class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder serializeName(String serializeName) {
+        this.serializeName = serializeName;
+        return this;
+    }
 
     public Client build() {
         if (Objects.isNull(this.loadBalancer)) {
@@ -87,6 +93,6 @@ public class ClientBuilder {
             this.nameResolver = new FixedAddressNameResolver(serverAddress);
         }
 
-        return new Client(authority, nameResolver, loadBalancer, interceptors, timeout);
+        return new Client(authority, nameResolver, loadBalancer, interceptors, timeout, serializeName);
     }
 }

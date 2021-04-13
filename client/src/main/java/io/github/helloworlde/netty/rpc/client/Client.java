@@ -41,6 +41,8 @@ public class Client {
 
     private Long timeout = 10_000L;
 
+    private String serializeName = "json";
+
     public Client() {
     }
 
@@ -48,12 +50,14 @@ public class Client {
                   NameResolver nameResolver,
                   LoadBalancer loadBalancer,
                   List<ClientInterceptor> interceptors,
-                  Long timeout) {
+                  Long timeout,
+                  String serializeName) {
         this.authority = authority;
         this.nameResolver = nameResolver;
         this.loadBalancer = loadBalancer;
         this.interceptors = interceptors;
         this.timeout = timeout;
+        this.serializeName = serializeName;
     }
 
     public Client init() {
@@ -67,7 +71,7 @@ public class Client {
                  .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                  .option(ChannelOption.TCP_NODELAY, true)
                  .handler(new LoggingHandler(LogLevel.TRACE))
-                 .handler(new ClientChannelInitializer(handler));
+                 .handler(new ClientChannelInitializer(serializeName, handler));
 
         TransportFactory transportFactory = new TransportFactory(bootstrap, enableHeartbeat);
 

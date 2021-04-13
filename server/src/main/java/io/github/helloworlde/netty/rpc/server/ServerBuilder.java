@@ -32,6 +32,8 @@ public class ServerBuilder {
 
     private List<ServerInterceptor> interceptors = new ArrayList<>();
 
+    private String serializeName;
+
     public ServerBuilder() {
     }
 
@@ -75,6 +77,11 @@ public class ServerBuilder {
         return this;
     }
 
+    public ServerBuilder serializeName(String serializeName) {
+        this.serializeName = serializeName;
+        return this;
+    }
+
     public Server build() {
         if (Objects.isNull(address)) {
             address = InetAddress.getLoopbackAddress().getHostAddress();
@@ -83,6 +90,6 @@ public class ServerBuilder {
             registry = new NoopRegistry();
         }
 
-        return new Server(name, port, address, serviceRegistry, metadata, registry, interceptors);
+        return new Server(name, port, address, serviceRegistry, metadata, registry, interceptors, serializeName);
     }
 }

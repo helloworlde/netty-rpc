@@ -33,7 +33,7 @@ public class Transport {
 
     private Channel channel;
 
-    public synchronized void doInit(RequestProcessor requestProcessor) {
+    public synchronized void doInit(String serializeName, RequestProcessor requestProcessor) {
         if (init.get()) {
             return;
         }
@@ -51,7 +51,7 @@ public class Transport {
                        .channel(NioServerSocketChannel.class)
                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                        .handler(new LoggingHandler(LogLevel.DEBUG))
-                       .childHandler(new ServerChannelInitializer(requestProcessor, executor));
+                       .childHandler(new ServerChannelInitializer(requestProcessor, executor, serializeName));
 
         this.init.compareAndSet(false, true);
     }
