@@ -39,3 +39,4 @@
 - [客户端拦截器](./doc/ClientInterceptor.md)
 - [服务端 Spring Boot Starter](./doc/ServerSpringBootStarter.md)
 - [客户端 Spring Boot Starter](./doc/ClientSpringBootStarter.md)
+- [SPI 加载 LoadBalancer](./doc/SPI.md)
