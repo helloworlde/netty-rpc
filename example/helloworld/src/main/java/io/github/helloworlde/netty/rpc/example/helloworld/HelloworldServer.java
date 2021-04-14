@@ -1,5 +1,6 @@
 package io.github.helloworlde.netty.rpc.example.helloworld;
 
+import io.github.helloworlde.netty.rpc.example.helloworld.service.HelloService;
 import io.github.helloworlde.netty.rpc.example.helloworld.service.impl.HelloServiceImpl;
 import io.github.helloworlde.netty.rpc.server.Server;
 import io.github.helloworlde.netty.rpc.server.ServerBuilder;

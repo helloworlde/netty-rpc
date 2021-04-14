@@ -26,7 +26,8 @@ public class RequestProcessor {
                                     .requestId(request.getRequestId())
                                     .build();
 
-        try {// 调用
+        try {
+            // 调用
             Object responseBody = execute(request);
             response.setBody(responseBody);
         } catch (RpcException e) {

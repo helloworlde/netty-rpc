@@ -3,6 +3,7 @@ package io.github.helloworlde.netty.rpc.example.helloworld;
 import io.github.helloworlde.netty.rpc.client.Client;
 import io.github.helloworlde.netty.rpc.client.ClientBuilder;
 import io.github.helloworlde.netty.rpc.client.proxy.ServiceProxy;
+import io.github.helloworlde.netty.rpc.example.helloworld.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
